@@ -470,6 +470,19 @@
     body[data-site-skin] .nav-item.dropdown-open > a::after { border-color: currentColor; }
     body[data-site-skin] .work-search button { color: var(--nav-active-label); }
 
+
+    /* Reversi: keep the rating/category/warning/completion explanation panel
+       dark, with light text, instead of inheriting pale panel styling. */
+    body[data-site-skin="reversi"] .symbol-explanation {
+      color: #f2f2f2;
+      background: #242424;
+      border-color: #777;
+    }
+    body[data-site-skin="reversi"] .symbol-explanation p,
+    body[data-site-skin="reversi"] .symbol-explanation strong {
+      color: #f2f2f2;
+    }
+
   </style>
 </head>
 <body>
