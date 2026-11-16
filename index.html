@@ -178,13 +178,22 @@
       width: 100vw; margin: auto 0 0 calc(50% - 50vw); padding: 1.2rem max(1rem, calc((100vw - 1200px) / 2)) 1.45rem;
       color: #fff; background: #990000; border-top: 1px solid #700; font-size: 0.76rem;
     }
-    .footer-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem 1.4rem; margin-top: 0.45rem; align-items: start; }
-    .footer-column { display: flex; flex-direction: column; align-items: flex-start; gap: 0.32rem; min-width: 0; }
+    .footer-links { display: flex; justify-content: flex-start; gap: 1rem; margin-top: 0.45rem; align-items: flex-start; }
+    .footer-column { display: flex; flex-direction: column; align-items: flex-start; gap: 0.38rem; min-width: 0; width: min(100%, 260px); }
     .footer-column strong { margin-bottom: 0.1rem; font-family: Georgia, "Times New Roman", serif; font-weight: normal; }
-    .footer a { color: #fff; text-underline-offset: 2px; }
-    .footer .customize-options { display: flex; flex-direction: column; gap: 0.32rem; }
+    .footer .customize-toggle, .footer .skin-choice {
+      display: inline-flex; align-items: center; justify-content: space-between; gap: 1rem;
+      min-height: 29px; padding: 0.25rem 0.58rem; color: #fff; text-align: left;
+      background: rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.52); border-radius: 2px;
+      font: inherit; cursor: pointer;
+    }
+    .footer .customize-toggle { min-width: 128px; }
+    .footer .customize-toggle:hover, .footer .customize-toggle:focus-visible,
+    .footer .skin-choice:hover, .footer .skin-choice:focus-visible { background: rgba(0,0,0,0.3); outline-offset: 2px; }
+    .footer .customize-options { display: flex; flex-direction: column; gap: 0.32rem; width: 100%; padding: 0.45rem; background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.4); }
     .footer .customize-options[hidden] { display: none; }
-    .footer a:hover, .footer a:focus { color: #fff; text-decoration-thickness: 2px; }
+    .footer .skin-choice[aria-pressed="true"] { color: #222; background: #fff; border-color: #fff; font-weight: 700; }
+    .skin-status { margin: 0.12rem 0 0; color: rgba(255,255,255,0.9); font-size: 0.72rem; }
 
     .archive-view { padding: 1.05rem 0.35rem 2rem; }
     .archive-view[hidden] { display: none !important; }
@@ -358,10 +367,83 @@
       .brand-logo { height: 1.35rem; flex: 0 0 auto; }
       .account-links { flex-direction: row; flex-wrap: nowrap; align-items: center; align-self: flex-end; gap: 0.4rem; font-size: 0.68rem; }
       .masthead { align-items: stretch; }
-      .footer-links { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem 1rem; }
+      .footer-links { display: flex; }
+      .footer-column { width: min(100%, 260px); }
+      .footer .customize-options { width: 100%; }
       .nav-item > a { font-size: 0.75rem; padding-inline: 0.25rem; }
       .tag-list { column-gap: 0.7rem; font-size: 0.82rem; }
     }
+
+
+    html[data-site-skin="default"] { background: #fff; }
+    html[data-site-skin="low-vision"] { background: #fff; }
+    html[data-site-skin="reversi"] { background: #171717; }
+    html[data-site-skin="snow-blue"] { background: #f8fbfe; }
+
+    /* User-selectable site skins. These rules cover static and dynamically rendered archive content. */
+    body[data-site-skin="low-vision"] {
+      --red: #5a0000; --red-dark: #260000; --red-link: #00008b; --ink: #000;
+      --muted: #242424; --line: #000; --soft-line: #333; --panel: #fff2a8; --panel-light: #fffbdc;
+      background: #fff !important; color: #000 !important; font-size: 1rem; line-height: 1.6;
+    }
+    body[data-site-skin="low-vision"] a { color: #00008b; text-decoration-thickness: 1.5px; }
+    body[data-site-skin="low-vision"] :is(.account-panel, .archive-search-form, .archive-filters, .draft-list, .archive-info-panel, .field, .editor-fieldset, .preview-box, .reader-metadata, .post-card, .account-panel, .archive-chip) {
+      color: #000; background: #fff2a8; border: 2px solid #000;
+    }
+    body[data-site-skin="low-vision"] :is(input, select, textarea) { color: #000; background: #fff; border: 2px solid #000; }
+    body[data-site-skin="low-vision"] :is(button, .panel-action, .form-button, .archive-chip, .reader-toolbar button, .reader-bottom-actions button) {
+      color: #000; background: #fff; border: 2px solid #000; font-weight: 600;
+    }
+    body[data-site-skin="low-vision"] :is(h1, h2, h3, .reader-title, .reader-section-heading, .section-heading) { color: #000; }
+    body[data-site-skin="low-vision"] :is(.nav-bar, .footer) { background: #4b0000; }
+    body[data-site-skin="low-vision"] .footer :is(button, .skin-choice[aria-pressed="true"]) { color: #000; background: #fff; border: 2px solid #fff; }
+
+    body[data-site-skin="reversi"] {
+      --red: #f2f2f2; --red-dark: #000; --red-link: #a8d8ff; --ink: #f4f4f4;
+      --muted: #c5c5c5; --line: #777; --soft-line: #555; --panel: #303030; --panel-light: #242424;
+      background: #171717 !important; color: #f4f4f4 !important;
+    }
+    body[data-site-skin="reversi"] a { color: #a8d8ff; }
+    body[data-site-skin="reversi"] :is(.account-panel, .archive-search-form, .archive-filters, .draft-list, .archive-info-panel, .field, .editor-fieldset, .preview-box, .reader-metadata, .post-card, .archive-chip) {
+      color: #f4f4f4; background: #303030; border-color: #777;
+    }
+    body[data-site-skin="reversi"] :is(input, select, textarea) { color: #fff; background: #1c1c1c; border-color: #888; }
+    body[data-site-skin="reversi"] :is(button, .panel-action, .form-button, .archive-chip, .reader-toolbar button, .reader-bottom-actions button) {
+      color: #f4f4f4; background: linear-gradient(#454545,#292929); border-color: #888;
+    }
+    body[data-site-skin="reversi"] :is(h1, h2, h3, p, label, .reader-title, .reader-section-heading, .archive-page-head h1, .archive-results > h2) { color: #f4f4f4; }
+    body[data-site-skin="reversi"] :is(.stats, .project-line, .archive-page-head p, .archive-count, .admin-note, .field-hint, .reader-byline, .reader-post-text, .post-date, .tag-count) { color: #d0d0d0; }
+    body[data-site-skin="reversi"] .reader-tags span { color: #fff; background: #444; border-color: #aaa; }
+    body[data-site-skin="reversi"] :is(.nav-bar, .footer) { background: #050505; border-color: #555; }
+    body[data-site-skin="reversi"] .footer :is(button, .skin-choice[aria-pressed="true"]) { color: #111; background: #fff; }
+
+    body[data-site-skin="snow-blue"] {
+      --red: #245b83; --red-dark: #153a58; --red-link: #174f7a; --ink: #172b3a;
+      --muted: #526879; --line: #a8bfd0; --soft-line: #cfdeea; --panel: #e8f1f8; --panel-light: #f5f9fc;
+      background: #f8fbfe !important; color: #172b3a !important;
+    }
+    body[data-site-skin="snow-blue"] a { color: #174f7a; }
+    body[data-site-skin="snow-blue"] :is(.account-panel, .archive-search-form, .archive-filters, .draft-list, .archive-info-panel, .field, .editor-fieldset, .preview-box, .reader-metadata, .post-card, .archive-chip) {
+      color: #172b3a; background: #e8f1f8; border-color: #a8bfd0;
+    }
+    body[data-site-skin="snow-blue"] :is(input, select, textarea) { color: #172b3a; background: #fff; border-color: #91aec4; }
+    body[data-site-skin="snow-blue"] :is(button, .panel-action, .form-button, .archive-chip, .reader-toolbar button, .reader-bottom-actions button) {
+      color: #173b55; background: linear-gradient(#fff,#dceaf4); border-color: #8baac0;
+    }
+    body[data-site-skin="snow-blue"] :is(.nav-bar, .footer) { background: #245b83; border-color: #153a58; }
+    body[data-site-skin="snow-blue"] .reader-tags span { background: #dceaf4; border-color: #8baac0; }
+    body[data-site-skin="snow-blue"] .footer :is(button, .skin-choice[aria-pressed="true"]) { color: #173b55; background: #fff; }
+
+    body[data-site-skin] .post-card :is(.post-title, .post-title a),
+    body[data-site-skin] .reader-post-text,
+    body[data-site-skin] .reader-summary { color: var(--ink); }
+    body[data-site-skin="reversi"] .post-card a,
+    body[data-site-skin="reversi"] .reader-metadata a { color: #a8d8ff; }
+    body[data-site-skin="snow-blue"] .post-card a,
+    body[data-site-skin="snow-blue"] .reader-metadata a { color: #174f7a; }
+    body[data-site-skin="low-vision"] .post-card a,
+    body[data-site-skin="low-vision"] .reader-metadata a { color: #00008b; }
+
   </style>
 </head>
 <body>
@@ -615,25 +697,16 @@
       <div class="footer-links">
         <div class="footer-column">
           <strong>Customize</strong>
-          <a href="#" id="customize-toggle" aria-expanded="false">Site Skins</a>
-          <div class="customize-options" id="customize-options" hidden>
-            <a href="#" data-skin="default">Default</a>
-            <a href="#" data-skin="low-vision">Low Vision</a>
-            <a href="#" data-skin="reversi">Reversi</a>
-            <a href="#" data-skin="snow-blue">Snow Blue</a>
+          <button class="customize-toggle" type="button" id="customize-toggle" aria-expanded="false" aria-controls="customize-options">
+            <span>Site Skins</span><span aria-hidden="true">▾</span>
+          </button>
+          <div class="customize-options" id="customize-options" role="group" aria-label="Choose a site skin" hidden>
+            <button class="skin-choice" type="button" data-skin="default" aria-pressed="true">Default</button>
+            <button class="skin-choice" type="button" data-skin="low-vision" aria-pressed="false">Low Vision</button>
+            <button class="skin-choice" type="button" data-skin="reversi" aria-pressed="false">Reversi</button>
+            <button class="skin-choice" type="button" data-skin="snow-blue" aria-pressed="false">Snow Blue</button>
           </div>
-        </div>
-        <div class="footer-column">
-          <strong>About the Archive</strong>
-          <a href="#">About</a><a href="#">Site Map</a><a href="#">Diversity Statement</a><a href="#">Terms of Service</a><a href="#">Content Policy</a><a href="#">Privacy Policy</a>
-        </div>
-        <div class="footer-column">
-          <strong>Contact Us</strong>
-          <a href="#">Policy Questions &amp; Abuse Reports</a><a href="#">Technical Support &amp; Feedback</a><a href="#">Donate or Volunteer</a>
-        </div>
-        <div class="footer-column">
-          <strong>Development</strong>
-          <a href="#">Bo3 — Blog of Oki’s Own</a><a href="#">Known Issues</a><a href="#">Site Status</a>
+          <p class="skin-status" id="skin-status" role="status" aria-live="polite">Current skin: Default</p>
         </div>
       </div>
     </footer>
@@ -648,6 +721,8 @@
       const SESSION_KEY = "bo3_admin_session_v1";
       const BOOKMARKS_KEY = "bo3_bookmarks_v1";
       const READ_LATER_KEY = "bo3_read_later_v1";
+      const SITE_SKIN_KEY = "bo3_site_skin_v1";
+      const SITE_SKINS = { "default": "Default", "low-vision": "Low Vision", "reversi": "Reversi", "snow-blue": "Snow Blue" };
       const $ = (selector) => document.querySelector(selector);
       const $$ = (selector) => Array.from(document.querySelectorAll(selector));
       let isAdmin = sessionStorage.getItem(SESSION_KEY) === "1";
@@ -656,6 +731,24 @@
       let currentPageState = { view: "home" };
       let previousPageState = { view: "home" };
       const SITE_NAME = "Blog of Oki’s Own";
+
+      function applySiteSkin(skin, persist = true) {
+        const selected = Object.prototype.hasOwnProperty.call(SITE_SKINS, skin) ? skin : "default";
+        document.documentElement.dataset.siteSkin = selected;
+        document.body.dataset.siteSkin = selected;
+        if (persist) {
+          try { localStorage.setItem(SITE_SKIN_KEY, selected); } catch (_) { /* Theme still applies for this page. */ }
+        }
+        $$('[data-skin]').forEach(button => {
+          button.setAttribute("aria-pressed", String(button.dataset.skin === selected));
+        });
+        const status = $("#skin-status");
+        if (status) status.textContent = `Current skin: ${SITE_SKINS[selected]}`;
+        const options = $("#customize-options");
+        const toggle = $("#customize-toggle");
+        if (options) options.hidden = true;
+        if (toggle) toggle.setAttribute("aria-expanded", "false");
+      }
 
       function updateDocumentTitle(page = currentPageState) {
         if (!page || page.view === "home") document.title = `Home | ${SITE_NAME}`;
@@ -1381,8 +1474,6 @@
         }
         const inertLink = event.target.closest("a.inert-link");
         if (inertLink) event.preventDefault();
-        const placeholderFooterLink = event.target.closest(".footer a:not(#customize-toggle):not([data-skin])");
-        if (placeholderFooterLink) event.preventDefault();
         if (event.target.closest("#brand-home")) {
           event.preventDefault();
           window.location.reload();
@@ -1394,27 +1485,10 @@
           options.hidden = !options.hidden;
           customizeToggle.setAttribute("aria-expanded", String(!options.hidden));
         }
-        const skinLink = event.target.closest("[data-skin]");
-        if (skinLink) {
+        const skinButton = event.target.closest("[data-skin]");
+        if (skinButton) {
           event.preventDefault();
-          const skin = skinLink.dataset.skin;
-          const root = document.documentElement;
-          const skins = {
-            default: { red: "#990000", dark: "#700000", panel: "#eee", ink: "#2a2a2a", bg: "#fff" },
-            "low-vision": { red: "#650000", dark: "#300000", panel: "#fff2a8", ink: "#000", bg: "#fff" },
-            reversi: { red: "#111", dark: "#000", panel: "#333", ink: "#fff", bg: "#171717" },
-            "snow-blue": { red: "#245b83", dark: "#153a58", panel: "#e8f1f8", ink: "#172b3a", bg: "#fff" }
-          };
-          const chosen = skins[skin] || skins.default;
-          root.style.setProperty("--red", chosen.red);
-          root.style.setProperty("--red-dark", chosen.dark);
-          root.style.setProperty("--red-link", chosen.red);
-          root.style.setProperty("--panel", chosen.panel);
-          root.style.setProperty("--ink", chosen.ink);
-          document.body.style.background = chosen.bg;
-          document.body.style.color = chosen.ink;
-          $("#customize-options").hidden = true;
-          $("#customize-toggle").setAttribute("aria-expanded", "false");
+          applySiteSkin(skinButton.dataset.skin);
         }
         const readerAction = event.target.closest("[data-reader-action]");
         if (readerAction) handleReaderAction(readerAction.dataset.readerAction);
@@ -1447,6 +1521,11 @@
           renderAll();
         }
       });
+
+      // Restore local preferences before rendering the page.
+      let savedSkin = "default";
+      try { savedSkin = localStorage.getItem(SITE_SKIN_KEY) || "default"; } catch (_) { /* Use the default skin. */ }
+      applySiteSkin(savedSkin, false);
 
       // Restore a remembered local admin session, then draw the homepage.
       if (localStorage.getItem(SESSION_KEY) === "1") isAdmin = true;
