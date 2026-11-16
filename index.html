@@ -444,6 +444,22 @@
     body[data-site-skin="low-vision"] .post-card a,
     body[data-site-skin="low-vision"] .reader-metadata a { color: #00008b; }
 
+    /* Theme-aware archive header: the lower gradient follows each skin, while
+       navigation labels keep a deliberate contrast against the page body. */
+    body[data-site-skin="default"] { --nav-surface: #990000; --nav-shadow: #430000; --nav-label: #fff; --nav-active: #d9d9d9; --nav-active-label: #222; }
+    body[data-site-skin="low-vision"] { --nav-surface: #4b0000; --nav-shadow: #210000; --nav-label: #fff2a8; --nav-active: #fff2a8; --nav-active-label: #000; }
+    body[data-site-skin="reversi"] { --nav-surface: #292929; --nav-shadow: #050505; --nav-label: #a8d8ff; --nav-active: #454545; --nav-active-label: #fff; }
+    body[data-site-skin="snow-blue"] { --nav-surface: #367ba9; --nav-shadow: #153a58; --nav-label: #fff; --nav-active: #dceaf4; --nav-active-label: #173b55; }
+    body[data-site-skin] .nav-bar { background: var(--nav-surface) !important; color: var(--nav-label); }
+    body[data-site-skin] .nav-bar::after {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='perlin'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23perlin)' opacity='.75'/%3E%3C/svg%3E"), linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--nav-shadow) 65%, transparent) 45%, var(--nav-shadow) 100%);
+    }
+    body[data-site-skin] .nav-item > a { color: var(--nav-label) !important; }
+    body[data-site-skin] .nav-item > a:hover,
+    body[data-site-skin] .nav-item.dropdown-open > a { color: var(--nav-active-label) !important; background: var(--nav-active) !important; }
+    body[data-site-skin] .nav-item.dropdown-open > a::after { border-color: currentColor; }
+    body[data-site-skin] .work-search button { color: var(--nav-active-label); }
+
   </style>
 </head>
 <body>
