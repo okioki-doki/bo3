@@ -32,21 +32,22 @@
     a:hover, a:focus { color: #000; }
     button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
-    .page { position: relative; width: min(100% - 2rem, 1240px); margin: 0 auto; }
+    .page { position: relative; width: min(100% - 2rem, 1240px); min-height: 100vh; margin: 0 auto; display: flex; flex-direction: column; }
+    main { flex: 1 0 auto; }
 
     /* Masthead: retained from the original Bo3 page. */
     .masthead {
-      min-height: 58px; display: flex; align-items: center; justify-content: space-between;
-      gap: 1rem; padding: 0.45rem 0.35rem 0.4rem; border-bottom: 1px solid var(--soft-line);
+      min-height: 58px; display: flex; flex-direction: column; align-items: stretch; justify-content: center;
+      gap: 0.2rem; padding: 0.45rem 0.35rem 0.4rem; border-bottom: 1px solid var(--soft-line);
     }
-    .brand { display: flex; align-items: center; gap: 0.85rem; min-width: 0; color: var(--red); text-decoration: none; }
+    .brand { display: flex; align-items: center; align-self: flex-start; gap: 0.85rem; min-width: 0; max-width: 100%; color: var(--red); text-decoration: none; white-space: nowrap; }
     .brand-mark {
       display: inline-block; color: var(--red); font-family: Georgia, "Times New Roman", serif;
       font-size: 2rem; font-weight: 700; letter-spacing: -0.12em; line-height: 0.95; white-space: nowrap;
     }
-    .brand-name { display: flex; align-items: center; height: 2rem; color: var(--red); font-family: Georgia, "Times New Roman", serif; font-size: 2rem; line-height: 1; white-space: nowrap; }
+    .brand-name { display: flex; align-items: center; height: 2rem; color: var(--red); font-family: Georgia, "Times New Roman", serif; font-size: 2rem; line-height: 1; white-space: nowrap; flex: 0 0 auto; }
     .brand-logo { display: block; width: auto; height: 2rem; max-width: 100%; object-fit: contain; }
-    .account-links { display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem; white-space: nowrap; font-size: 0.85rem; color: #000; }
+    .account-links { display: flex; flex-flow: row nowrap; align-items: center; justify-content: flex-end; align-self: flex-end; gap: 0.85rem; white-space: nowrap; font-size: 0.78rem; color: #000; }
     .account-links > * { flex: 0 0 auto; white-space: nowrap; }
     .account-links a, .account-links button { color: #000; text-decoration: none; }
     .account-links button { padding: 0; background: none; border: 0; }
@@ -174,11 +175,16 @@
     .post-actions button { padding: 0.2rem 0.55rem; border: 1px solid #aaa; border-radius: 3px; background: linear-gradient(#fff,#e6e6e6); color: #333; font-size: 0.8rem; }
     .admin-note { color: #555; font-size: 0.8rem; }
     .footer {
-      width: 100vw; margin: 0 0 0 calc(50% - 50vw); padding: 1rem max(1rem, calc((100vw - 1200px) / 2)) 1.25rem;
+      width: 100vw; margin: auto 0 0 calc(50% - 50vw); padding: 1.2rem max(1rem, calc((100vw - 1200px) / 2)) 1.45rem;
       color: #fff; background: #990000; border-top: 1px solid #700; font-size: 0.76rem;
     }
-    .footer-links { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: 0.45rem; }
-    .footer a { color: #fff; }
+    .footer-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem 1.4rem; margin-top: 0.45rem; align-items: start; }
+    .footer-column { display: flex; flex-direction: column; align-items: flex-start; gap: 0.32rem; min-width: 0; }
+    .footer-column strong { margin-bottom: 0.1rem; font-family: Georgia, "Times New Roman", serif; font-weight: normal; }
+    .footer a { color: #fff; text-underline-offset: 2px; }
+    .footer .customize-options { display: flex; flex-direction: column; gap: 0.32rem; }
+    .footer .customize-options[hidden] { display: none; }
+    .footer a:hover, .footer a:focus { color: #fff; text-decoration-thickness: 2px; }
 
     .archive-view { padding: 1.05rem 0.35rem 2rem; }
     .archive-view[hidden] { display: none !important; }
@@ -312,12 +318,12 @@
 
     @media (max-width: 760px) {
       .page { width: min(100% - 0.75rem, 980px); }
-      .masthead { min-height: 54px; }
+      .masthead { min-height: 54px; gap: 0.18rem; }
       .brand { gap: 0.55rem; }
       .brand-mark { font-size: 1.8rem; }
-      .brand-name { height: 1.55rem; font-size: 1.55rem; line-height: 1; white-space: normal; }
+      .brand-name { height: 1.55rem; font-size: 1.55rem; line-height: 1; white-space: nowrap; }
       .brand-logo { height: 1.55rem; }
-      .account-links { gap: 0.55rem; font-size: 0.78rem; }
+      .account-links { gap: 0.55rem; font-size: 0.74rem; }
       .nav-bar { width: 100vw; margin-left: calc(50% - 50vw); flex-wrap: wrap; align-items: flex-start; padding: 2px 0.5rem 0.65rem; }
       .nav-list { width: 100%; flex: 0 0 100%; flex-wrap: nowrap; }
       .nav-item { flex: 1 0 auto; }
@@ -345,12 +351,14 @@
       .symbol { width: 34px; height: 34px; }
     }
     @media (max-width: 420px) {
-      .masthead { align-items: flex-start; }
-      .brand { align-items: flex-start; }
+      .masthead { align-items: stretch; }
+      .brand { align-items: center; }
       .brand-mark { font-size: 1.9rem; }
-      .brand-name { height: 1.35rem; font-size: 1.35rem; line-height: 1; max-width: 190px; }
-      .brand-logo { height: 1.35rem; }
-      .account-links { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 0.4rem; }
+      .brand-name { height: 1.35rem; font-size: clamp(0.78rem, 4.15vw, 1.35rem); line-height: 1; max-width: none; white-space: nowrap; }
+      .brand-logo { height: 1.35rem; flex: 0 0 auto; }
+      .account-links { flex-direction: row; flex-wrap: nowrap; align-items: center; align-self: flex-end; gap: 0.4rem; font-size: 0.68rem; }
+      .masthead { align-items: stretch; }
+      .footer-links { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem 1rem; }
       .nav-item > a { font-size: 0.75rem; padding-inline: 0.25rem; }
       .tag-list { column-gap: 0.7rem; font-size: 0.82rem; }
     }
@@ -604,10 +612,29 @@
     </main>
 
     <footer class="footer">
-      <div>Bo3 — Blog of Oki’s Own</div>
       <div class="footer-links">
-        <a class="inert-link" href="#">About</a><a class="inert-link" href="#">FAQ</a><a class="inert-link" href="#">Terms of Service</a>
-        <a class="inert-link" href="#">Privacy</a><a class="inert-link" href="#">Customize</a><a class="inert-link" href="#">Default</a>
+        <div class="footer-column">
+          <strong>Customize</strong>
+          <a href="#" id="customize-toggle" aria-expanded="false">Site Skins</a>
+          <div class="customize-options" id="customize-options" hidden>
+            <a href="#" data-skin="default">Default</a>
+            <a href="#" data-skin="low-vision">Low Vision</a>
+            <a href="#" data-skin="reversi">Reversi</a>
+            <a href="#" data-skin="snow-blue">Snow Blue</a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <strong>About the Archive</strong>
+          <a href="#">About</a><a href="#">Site Map</a><a href="#">Diversity Statement</a><a href="#">Terms of Service</a><a href="#">Content Policy</a><a href="#">Privacy Policy</a>
+        </div>
+        <div class="footer-column">
+          <strong>Contact Us</strong>
+          <a href="#">Policy Questions &amp; Abuse Reports</a><a href="#">Technical Support &amp; Feedback</a><a href="#">Donate or Volunteer</a>
+        </div>
+        <div class="footer-column">
+          <strong>Development</strong>
+          <a href="#">Bo3 — Blog of Oki’s Own</a><a href="#">Known Issues</a><a href="#">Site Status</a>
+        </div>
       </div>
     </footer>
   </div>
@@ -1354,6 +1381,41 @@
         }
         const inertLink = event.target.closest("a.inert-link");
         if (inertLink) event.preventDefault();
+        const placeholderFooterLink = event.target.closest(".footer a:not(#customize-toggle):not([data-skin])");
+        if (placeholderFooterLink) event.preventDefault();
+        if (event.target.closest("#brand-home")) {
+          event.preventDefault();
+          window.location.reload();
+        }
+        const customizeToggle = event.target.closest("#customize-toggle");
+        if (customizeToggle) {
+          event.preventDefault();
+          const options = $("#customize-options");
+          options.hidden = !options.hidden;
+          customizeToggle.setAttribute("aria-expanded", String(!options.hidden));
+        }
+        const skinLink = event.target.closest("[data-skin]");
+        if (skinLink) {
+          event.preventDefault();
+          const skin = skinLink.dataset.skin;
+          const root = document.documentElement;
+          const skins = {
+            default: { red: "#990000", dark: "#700000", panel: "#eee", ink: "#2a2a2a", bg: "#fff" },
+            "low-vision": { red: "#650000", dark: "#300000", panel: "#fff2a8", ink: "#000", bg: "#fff" },
+            reversi: { red: "#111", dark: "#000", panel: "#333", ink: "#fff", bg: "#171717" },
+            "snow-blue": { red: "#245b83", dark: "#153a58", panel: "#e8f1f8", ink: "#172b3a", bg: "#fff" }
+          };
+          const chosen = skins[skin] || skins.default;
+          root.style.setProperty("--red", chosen.red);
+          root.style.setProperty("--red-dark", chosen.dark);
+          root.style.setProperty("--red-link", chosen.red);
+          root.style.setProperty("--panel", chosen.panel);
+          root.style.setProperty("--ink", chosen.ink);
+          document.body.style.background = chosen.bg;
+          document.body.style.color = chosen.ink;
+          $("#customize-options").hidden = true;
+          $("#customize-toggle").setAttribute("aria-expanded", "false");
+        }
         const readerAction = event.target.closest("[data-reader-action]");
         if (readerAction) handleReaderAction(readerAction.dataset.readerAction);
         const symbolInfo = event.target.closest("[data-symbol-info]");
