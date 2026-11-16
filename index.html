@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Blog of Oki's Own</title>
+  <title>Home | Blog of Oki’s Own</title>
   <style>
     :root {
       --red: #990000;
@@ -46,7 +46,8 @@
     }
     .brand-name { display: flex; align-items: center; height: 2rem; color: var(--red); font-family: Georgia, "Times New Roman", serif; font-size: 2rem; line-height: 1; white-space: nowrap; }
     .brand-logo { display: block; width: auto; height: 2rem; max-width: 100%; object-fit: contain; }
-    .account-links { display: flex; align-items: center; gap: 1rem; white-space: nowrap; font-size: 0.85rem; color: #000; }
+    .account-links { display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem; white-space: nowrap; font-size: 0.85rem; color: #000; }
+    .account-links > * { flex: 0 0 auto; white-space: nowrap; }
     .account-links a, .account-links button { color: #000; text-decoration: none; }
     .account-links button { padding: 0; background: none; border: 0; }
     .account-links button:hover, .account-links a:hover { color: #333; text-decoration: underline; }
@@ -137,19 +138,23 @@
     .post-card { position: relative; margin: 0.75rem 0; padding: 0.85rem; border: 1px solid #ccc; background: #fff; }
     .post-card-head { display: grid; grid-template-columns: 148px minmax(0, 1fr) auto; gap: 0.8rem; align-items: start; }
     .symbols {
-      display: grid; grid-template-columns: repeat(2, 37px); grid-template-rows: repeat(2, 37px); gap: 5px;
+      display: grid; grid-template-columns: repeat(2, 34px); grid-template-rows: repeat(2, 34px); gap: 4px;
       width: max-content; padding: 0; border: 0; background: transparent; cursor: pointer;
     }
     .symbols:focus-visible { outline: 2px solid #1760ae; outline-offset: 3px; }
     .symbol {
-      display: flex; align-items: center; justify-content: center; width: 37px; height: 37px;
-      border: 1px solid rgba(0,0,0,0.12); color: #fff; font-family: Arial, sans-serif; font-size: 1.15rem; font-weight: bold;
-      text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+      display: flex; align-items: center; justify-content: center; width: 34px; height: 34px;
+      overflow: hidden; border: 1px solid #777; border-radius: 2px; color: #222;
+      background: linear-gradient(#fff, #e9e9e9); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55);
+      font-family: Arial, sans-serif; font-size: 0.86rem; font-weight: 700; line-height: 1;
     }
-    .symbol-rating { background: #990000; }
-    .symbol-category { background: #1760ae; }
-    .symbol-warning { color: #555; background: linear-gradient(#fff, #e5e5e5); text-shadow: none; }
-    .symbol-status { background: #75aa00; font-size: 1.35rem; }
+    .symbol-rating { border-color: #6d6d6d; background: linear-gradient(#f5f5f5, #dcdcdc); }
+    .symbol-category { border-color: #6d6d6d; background: linear-gradient(#f5f5f5, #dcdcdc); font-size: 0.68rem; }
+    .symbol-warning { color: #9a2020; background: linear-gradient(#fff, #e9e9e9); }
+    .symbol-status { color: #28752b; background: linear-gradient(#fff, #e9e9e9); }
+    .symbol svg { display: block; width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .symbol-warning.is-blank, .symbol-rating.is-blank, .symbol-category.is-blank { color: transparent; }
+    .symbol-status.is-in-progress { color: #555; }
     .post-title { margin: 0 0 0.15rem; font-family: Georgia, "Times New Roman", serif; font-size: 1.35rem; font-weight: normal; line-height: 1.25; }
     .post-title button { padding: 0; color: var(--red-link); background: none; border: 0; text-align: left; text-decoration: underline; font: inherit; }
     .post-byline { color: #333; font-family: Georgia, "Times New Roman", serif; font-size: 1rem; }
@@ -174,6 +179,37 @@
     }
     .footer-links { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: 0.45rem; }
     .footer a { color: #fff; }
+
+    .archive-view { padding: 1.05rem 0.35rem 2rem; }
+    .archive-view[hidden] { display: none !important; }
+    .archive-page-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 0.65rem; }
+    .archive-page-head h1 { margin: 0; color: #333; font-family: Georgia, "Times New Roman", serif; font-size: 1.6rem; font-weight: normal; }
+    .archive-page-head p { margin: 0.25rem 0 0; color: #555; }
+    .archive-search-form { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1rem; padding: 0.65rem; background: #eee; border: 1px solid #bbb; }
+    .archive-search-form[hidden] { display: none !important; }
+    .archive-search-form input, .archive-search-form select { min-height: 30px; padding: 0.25rem 0.45rem; border: 1px solid #aaa; background: #fff; }
+    .archive-search-form input { flex: 1 1 230px; min-width: 140px; }
+    .archive-search-form button, .archive-filters button, .archive-chip { padding: 0.25rem 0.65rem; color: #333; background: linear-gradient(#fff, #e4e4e4); border: 1px solid #aaa; border-radius: 3px; }
+    .archive-layout { display: grid; grid-template-columns: minmax(180px, 245px) minmax(0, 1fr); gap: 1rem; align-items: start; }
+    .archive-filters { min-width: 0; padding: 0.7rem; background: #eee; border: 1px solid #bbb; }
+    .archive-filters:empty { display: none; }
+    .archive-filters h2, .archive-filters h3 { margin: 0 0 0.45rem; font-size: 0.95rem; }
+    .archive-filters p { margin: 0.3rem 0; }
+    .archive-results { min-width: 0; }
+    .archive-results > h2 { margin: 0 0 0.45rem; font-family: Georgia, "Times New Roman", serif; font-size: 1.15rem; font-weight: normal; }
+    .archive-count { margin: 0 0 0.7rem; color: #555; font-size: 0.82rem; }
+    .archive-chip-list { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
+    .archive-chip { max-width: 100%; text-align: left; cursor: pointer; }
+    .archive-chip:hover, .archive-chip:focus-visible { background: #d9d9d9; }
+    .archive-chip small { color: #555; }
+    .archive-info-panel { padding: 0.85rem 1rem; background: #f3f3f3; border: 1px solid #bbb; }
+    .archive-info-panel h2 { margin: 0 0 0.45rem; font-family: Georgia, "Times New Roman", serif; font-weight: normal; }
+    .archive-info-panel p { margin: 0.35rem 0; }
+    @media (max-width: 700px) {
+      .archive-layout { grid-template-columns: 1fr; }
+      .archive-filters { order: 2; }
+      .archive-results { order: 1; }
+    }
 
     /* Full-page post reader, inspired by the supplied archive screenshot. */
     .reader-view { max-width: none; margin: 0 auto; padding: 1rem 0.35rem 2rem; }
@@ -246,7 +282,7 @@
       border: 1px solid #bbb; background: #fff; box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
     }
     .field input[type="date"] {
-      display: block; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box;
+      display: block; width: 100%; min-width: 0; max-width: min(100%, 15rem); box-sizing: border-box;
       padding-right: 0.22rem; overflow: hidden;
     }
     .field input[type="date"]::-webkit-calendar-picker-indicator { margin: 0; padding: 0; flex: 0 0 auto; }
@@ -314,7 +350,7 @@
       .brand-mark { font-size: 1.9rem; }
       .brand-name { height: 1.35rem; font-size: 1.35rem; line-height: 1; max-width: 190px; }
       .brand-logo { height: 1.35rem; }
-      .account-links { flex-direction: column; align-items: flex-end; gap: 0.25rem; }
+      .account-links { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 0.4rem; }
       .nav-item > a { font-size: 0.75rem; padding-inline: 0.25rem; }
       .tag-list { column-gap: 0.7rem; font-size: 0.82rem; }
     }
@@ -323,7 +359,7 @@
 <body>
   <div class="page">
     <header class="masthead">
-      <a class="brand inert-link" href="#" aria-label="Bo3 home">
+      <a class="brand inert-link" href="#" id="brand-home" aria-label="Refresh Blog of Oki’s Own">
         <img class="brand-logo" src="/bo3-logo.png" alt="Bo3">
         <span class="brand-name">Blog of Oki’s Own</span>
       </a>
@@ -354,41 +390,41 @@
     <nav class="nav-bar" aria-label="Main navigation">
       <ul class="nav-list">
         <li class="nav-item">
-          <a class="inert-link" href="#">Tags</a>
+          <a class="inert-link nav-tab" href="#" aria-haspopup="true">Tags</a>
           <ul class="dropdown">
-            <li><a class="inert-link" href="#">All Tags</a></li>
-            <li><a class="inert-link" href="#">Most Used Tags</a></li>
-            <li><a class="inert-link" href="#">Recently Used Tags</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="tags-all">All Tags</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="tags-most">Most Used Tags</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="tags-recent">Recently Used Tags</a></li>
           </ul>
         </li>
         <li class="nav-item">
-          <a class="inert-link" href="#">Browse</a>
+          <a class="inert-link nav-tab" href="#" aria-haspopup="true">Browse</a>
           <ul class="dropdown">
-            <li><a class="inert-link" href="#">Recent Posts</a></li>
-            <li><a class="inert-link" href="#">All Posts</a></li>
-            <li><a class="inert-link" href="#">Series</a></li>
-            <li><a class="inert-link" href="#">Collections</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="browse-recent">Recent Posts</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="browse-all">All Posts</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="browse-series">Series</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="browse-collections">Collections</a></li>
           </ul>
         </li>
         <li class="nav-item">
-          <a class="inert-link" href="#">Search</a>
+          <a class="inert-link nav-tab" href="#" aria-haspopup="true">Search</a>
           <ul class="dropdown">
-            <li><a class="inert-link" href="#">Posts</a></li>
-            <li><a class="inert-link" href="#">Tags</a></li>
-            <li><a class="inert-link" href="#">People</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="search-posts">Posts</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="search-tags">Tags</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="search-people">People</a></li>
           </ul>
         </li>
         <li class="nav-item">
-          <a class="inert-link" href="#">About</a>
+          <a class="inert-link nav-tab" href="#" aria-haspopup="true">About</a>
           <ul class="dropdown">
-            <li><a class="inert-link" href="#">About Bo3</a></li>
-            <li><a class="inert-link" href="#">FAQ</a></li>
-            <li><a class="inert-link" href="#">Privacy</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="about">About Bo3</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="faq">FAQ</a></li>
+            <li><a class="archive-link" href="#" data-archive-action="privacy">Privacy</a></li>
           </ul>
         </li>
       </ul>
       <form class="work-search" role="search" id="search-form">
-        <input type="search" aria-label="Search posts" autocomplete="off">
+        <input id="work-search-input" type="search" aria-label="Search posts" autocomplete="off">
         <button type="submit">Search</button>
       </form>
     </nav>
@@ -426,6 +462,30 @@
         </section>
       </div>
 
+
+      <section class="archive-view" id="archive-view" hidden aria-label="Archive results">
+        <header class="archive-page-head">
+          <div>
+            <h1 id="archive-heading">Search</h1>
+            <p id="archive-description">Search posts, tags, and people on Blog of Oki’s Own.</p>
+          </div>
+        </header>
+        <form class="archive-search-form" id="archive-search-form" role="search">
+          <label for="archive-search-scope">Search within</label>
+          <select id="archive-search-scope">
+            <option value="posts">Posts</option>
+            <option value="tags">Tags</option>
+            <option value="people">People</option>
+          </select>
+          <input id="archive-search-input" type="search" autocomplete="off" placeholder="Search the archive">
+          <button type="submit">Search</button>
+        </form>
+        <div class="archive-layout">
+          <aside class="archive-filters" id="archive-filters" aria-label="Archive filters"></aside>
+          <section class="archive-results" id="archive-results" aria-live="polite"></section>
+        </div>
+      </section>
+
       <section class="reader-view" id="reader-view" hidden aria-label="Post reader">
         <div class="reader-toolbar" aria-label="Work controls">
           <div class="reader-toolbar-row">
@@ -449,7 +509,6 @@
         <div class="reader-bottom-actions">
           <button type="button" data-reader-action="entire-work">Top</button>
           <button type="button" disabled aria-disabled="true">Next Chapter</button>
-          <button type="button" data-reader-action="kudos">Kudos</button>
           <button type="button" data-reader-action="bookmark">Bookmark</button>
           <button type="button" id="reader-back-bottom" class="form-button">Back to Posts</button>
         </div>
@@ -519,15 +578,6 @@
           </fieldset>
 
           <fieldset class="editor-fieldset">
-            <legend>Privacy and Comments</legend>
-            <div class="choice-columns">
-              <label><input type="checkbox" id="registered-only"> Only show this post to logged-in readers</label>
-              <label><input type="checkbox" id="moderate-comments"> Enable comment moderation</label>
-            </div>
-            <div class="field" style="margin-top:.6rem"><span class="field-label">Who can comment?</span><div class="choice-list"><label><input type="radio" name="comment-permission" value="Registered users and guests" checked> Registered users and guests</label><label><input type="radio" name="comment-permission" value="Registered users only"> Registered users only</label><label><input type="radio" name="comment-permission" value="No comments"> No comments</label></div></div>
-          </fieldset>
-
-          <fieldset class="editor-fieldset">
             <legend>Post Text *</legend>
             <div class="text-tools">
               <button type="button" id="rich-mode" aria-pressed="true">Rich Text</button>
@@ -571,12 +621,29 @@
       const SESSION_KEY = "bo3_admin_session_v1";
       const BOOKMARKS_KEY = "bo3_bookmarks_v1";
       const READ_LATER_KEY = "bo3_read_later_v1";
-      const KUDOS_KEY = "bo3_kudos_v1";
       const $ = (selector) => document.querySelector(selector);
       const $$ = (selector) => Array.from(document.querySelectorAll(selector));
       let isAdmin = sessionStorage.getItem(SESSION_KEY) === "1";
       let editorMode = "rich";
       let currentReaderPostId = "";
+      let currentPageState = { view: "home" };
+      let previousPageState = { view: "home" };
+      const SITE_NAME = "Blog of Oki’s Own";
+
+      function updateDocumentTitle(page = currentPageState) {
+        if (!page || page.view === "home") document.title = `Home | ${SITE_NAME}`;
+        else if (page.view === "reader") document.title = page.postTitle || "Untitled post";
+        else if (page.view === "search") document.title = `Search | ${SITE_NAME}`;
+        else document.title = `${page.title || "Archive"} | ${SITE_NAME}`;
+      }
+      function showHome() {
+        currentPageState = { view: "home" };
+        $("#home-layout").hidden = false;
+        $("#archive-view").hidden = true;
+        $("#reader-view").hidden = true;
+        $("#editor-view").hidden = true;
+        updateDocumentTitle();
+      }
 
       function readList(key) {
         try { const value = JSON.parse(localStorage.getItem(key) || "[]"); return Array.isArray(value) ? value : []; }
@@ -654,7 +721,7 @@
         localStorage.removeItem(SESSION_KEY);
         $("#editor-view").hidden = true;
         $("#reader-view").hidden = true;
-        $("#home-layout").hidden = false;
+        showHome();
         refreshAccountLinks();
         renderAll();
       }
@@ -668,27 +735,37 @@
         const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
         const list = $("#tag-list");
         list.innerHTML = sorted.length
-          ? sorted.map(([tag, count]) => `<li><a class="inert-link" href="#">${escapeHtml(tag)}</a> <span class="tag-count">(${count})</span></li>`).join("")
+          ? sorted.map(([tag, count]) => `<li><a class="tag-link" href="#" data-filter-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</a> <span class="tag-count">(${count})</span></li>`).join("")
           : '<li class="empty-state">Tags will appear here when posts are published.</li>';
         $("#site-stats").innerHTML = `${visiblePosts.length} posts&nbsp; | &nbsp;${sorted.length} tags`;
       }
       function symbolValues(post) {
-        const rating = ({"General":"G", "Teen":"T", "Mature":"M", "Explicit":"E", "Not Rated":"NR"})[post.rating] || "G";
-        const category = ({"F/F":"F", "F/M":"F/M", "M/M":"M", "Gen":"G", "Multi":"+", "Other":"O"})[post.category] || "G";
+        const rating = ({"General":"G", "Teen":"T", "Mature":"M", "Explicit":"E", "Not Rated":""})[post.rating] ?? "G";
+        const category = ({"F/F":"F/F", "F/M":"F/M", "M/M":"M/M", "Gen":"Gen", "Multi":"Multi", "Other":"Other"})[post.category] ?? "Gen";
         const selectedWarnings = post.warnings || [];
         const hasSpecificWarning = selectedWarnings.some(warning => !["No Archive Warnings Apply", "Creator Chose Not To Use Warnings"].includes(warning));
-        const warnings = hasSpecificWarning ? "!" : selectedWarnings.includes("Creator Chose Not To Use Warnings") ? "?" : "✓";
-        const complete = post.complete === false ? "…" : "✓";
-        return { rating, category, warnings, complete };
+        const warningType = hasSpecificWarning ? "warning" : selectedWarnings.includes("Creator Chose Not To Use Warnings") ? "question" : "blank";
+        const complete = post.complete === false ? "in-progress" : "complete";
+        return { rating, category, warningType, complete };
+      }
+      function warningIconMarkup(type) {
+        if (type === "warning") return '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.5 29 27H3Z"/><path d="M16 11v8"/><path d="M16 23.2v.2"/></svg>';
+        if (type === "question") return '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10.5 11.3a5.7 5.7 0 1 1 9.8 3.9c-2.1 2.1-4.3 2.7-4.3 5.4"/><path d="M16 25.2v.2"/></svg>';
+        return '';
+      }
+      function completionIconMarkup(type) {
+        if (type === "complete") return '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="m6 16.5 6.3 6.2L26 9"/></svg>';
+        return '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 3.5h12l7 7v11l-7 7H10l-7-7v-11Z"/><path d="M10 16h12"/></svg>';
       }
       function symbolButtonMarkup(post) {
         const symbols = symbolValues(post);
         const warnings = (post.warnings || []).length ? post.warnings.join(", ") : "No warning selected";
-        return `<button class="symbols" type="button" data-symbol-info="${escapeHtml(post.id)}" aria-expanded="false" aria-label="Show rating, category, warning, and completion explanations">
-          <span class="symbol symbol-rating" title="${escapeHtml(post.rating || "General")}">${symbols.rating}</span>
-          <span class="symbol symbol-category" title="${escapeHtml(post.category || "Gen")}">${symbols.category}</span>
-          <span class="symbol symbol-warning" title="${escapeHtml(warnings)}">${symbols.warnings}</span>
-          <span class="symbol symbol-status" title="${post.complete === false ? "In progress" : "Complete"}">${symbols.complete}</span>
+        const ratingClass = symbols.rating ? "" : " is-blank";
+        return `<button class="symbols" type="button" data-symbol-info="${escapeHtml(post.id)}" aria-expanded="false" aria-label="Show rating, category, archive warning, and completion explanations">
+          <span class="symbol symbol-rating${ratingClass}" title="${escapeHtml(post.rating || "General")}">${escapeHtml(symbols.rating)}</span>
+          <span class="symbol symbol-category" title="${escapeHtml(post.category || "Gen")}">${escapeHtml(symbols.category)}</span>
+          <span class="symbol symbol-warning${symbols.warningType === "blank" ? " is-blank" : ""}" title="${escapeHtml(warnings)}">${warningIconMarkup(symbols.warningType)}</span>
+          <span class="symbol symbol-status${symbols.complete === "in-progress" ? " is-in-progress" : ""}" title="${post.complete === false ? "In progress" : "Complete"}">${completionIconMarkup(symbols.complete)}</span>
         </button>`;
       }
       function symbolLegendMarkup(post) {
@@ -696,32 +773,35 @@
           "General": "General Audiences — intended for a broad audience.",
           "Teen": "Teen And Up Audiences — may be more suitable for teen readers.",
           "Mature": "Mature — intended for mature readers.",
-          "Explicit": "Explicit — contains explicitly rated material.",
+          "Explicit": "Explicit — an adult rating.",
           "Not Rated": "Not Rated — no audience rating has been assigned."
         };
         const categoryDescriptions = {
-          "Gen": "General — no romantic or sexual relationship category is selected.",
+          "Gen": "Gen — no romantic or sexual relationship category is selected.",
           "F/F": "F/F — a female/female relationship category.",
           "F/M": "F/M — a female/male relationship category.",
           "M/M": "M/M — a male/male relationship category.",
           "Multi": "Multi — more than one relationship category.",
           "Other": "Other — another category or configuration."
         };
-        const warningDescriptions = (post.warnings || []).length
-          ? post.warnings.map(warning => {
-              if (warning === "No Archive Warnings Apply") return "No Archive Warnings Apply — the creator indicates that none of the listed archive warnings apply.";
-              if (warning === "Creator Chose Not To Use Warnings") return "Creator Chose Not To Use Warnings — the creator has chosen not to specify archive warnings.";
-              return `${warning} — this warning is marked for the post.`;
-            }).join(" ")
-          : "No archive warning has been selected.";
+        const selected = post.warnings || [];
+        const hasSpecificWarning = selected.some(warning => !["No Archive Warnings Apply", "Creator Chose Not To Use Warnings"].includes(warning));
+        const warningDescriptions = hasSpecificWarning
+          ? selected.filter(warning => !["No Archive Warnings Apply", "Creator Chose Not To Use Warnings"].includes(warning)).map(warning => `${warning} — this warning is marked for the post.`).join(" ")
+          : selected.includes("Creator Chose Not To Use Warnings")
+            ? "Creator Chose Not To Use Warnings — the creator has chosen not to specify archive warnings."
+            : selected.includes("No Archive Warnings Apply")
+              ? "No Archive Warnings Apply — the creator indicates that none of the listed archive warnings apply."
+              : "No archive warning has been selected.";
         const rating = post.rating || "General";
         const category = post.category || "Gen";
         const completion = post.complete === false ? "In progress — this post is not marked complete." : "Complete — this post is marked complete.";
+        const warningLabel = hasSpecificWarning ? "Warning marked" : selected.includes("Creator Chose Not To Use Warnings") ? "Creator chose not to use warnings" : selected.includes("No Archive Warnings Apply") ? "No Archive Warnings Apply" : "No warning selected";
         return `<div class="symbol-explanation" data-symbol-legend="${escapeHtml(post.id)}" hidden>
-          <p><strong>Rating (${escapeHtml(symbolValues(post).rating)}):</strong> ${escapeHtml(ratingDescriptions[rating] || rating)}</p>
-          <p><strong>Category (${escapeHtml(symbolValues(post).category)}):</strong> ${escapeHtml(categoryDescriptions[category] || category)}</p>
-          <p><strong>Archive Warnings (${escapeHtml(symbolValues(post).warnings)}):</strong> ${escapeHtml(warningDescriptions)}</p>
-          <p><strong>Completion (${escapeHtml(symbolValues(post).complete)}):</strong> ${escapeHtml(completion)}</p>
+          <p><strong>Rating:</strong> ${escapeHtml(ratingDescriptions[rating] || rating)}</p>
+          <p><strong>Category:</strong> ${escapeHtml(categoryDescriptions[category] || category)}</p>
+          <p><strong>Archive Warnings (${escapeHtml(warningLabel)}):</strong> ${escapeHtml(warningDescriptions)}</p>
+          <p><strong>Completion:</strong> ${escapeHtml(completion)}</p>
         </div>`;
       }
       function cardMarkup(post, isDraft = false) {
@@ -809,25 +889,30 @@
         $("#reader-bookmark").textContent = isBookmarked ? "Bookmarked" : "Bookmark";
         const bottomBookmark = document.querySelector('.reader-bottom-actions [data-reader-action="bookmark"]');
         if (bottomBookmark) bottomBookmark.textContent = isBookmarked ? "Bookmarked" : "Bookmark";
-        const kudosButton = document.querySelector('.reader-bottom-actions [data-reader-action="kudos"]');
-        if (kudosButton) kudosButton.textContent = readList(KUDOS_KEY).includes(post.id) ? "Kudos left" : "Kudos";
         const laterButton = document.querySelector('[data-reader-action="later"]');
         if (laterButton) laterButton.textContent = readList(READ_LATER_KEY).includes(post.id) ? "Marked for Later" : "Mark for Later";
         $("#reader-action-status").textContent = "";
         $("#home-layout").hidden = true;
+        $("#archive-view").hidden = true;
         $("#editor-view").hidden = true;
         $("#reader-view").hidden = false;
+        currentPageState = { view: "reader", postTitle: post.title || "Untitled post" };
+        updateDocumentTitle(currentPageState);
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
       function openReader(postId) {
         const post = readList(POSTS_KEY).find(item => item.id === postId);
         if (!post || (post.registeredOnly && !isAdmin)) return;
+        previousPageState = currentPageState.view === "reader" ? previousPageState : { ...currentPageState };
         renderReader(post);
       }
       function closeReader() {
         currentReaderPostId = "";
         $("#reader-view").hidden = true;
-        $("#home-layout").hidden = false;
+        if (window.location.hash) history.replaceState(null, "", window.location.href.split("#")[0]);
+        const restore = previousPageState || { view: "home" };
+        if (restore.view === "home") showHome();
+        else renderArchivePage(restore);
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
       function toggleBookmark() {
@@ -850,18 +935,6 @@
         const button = document.querySelector('[data-reader-action="later"]');
         if (button) button.textContent = exists ? "Mark for Later" : "Marked for Later";
         $("#reader-action-status").textContent = exists ? "Removed from your reading list." : "Added to your reading list in this browser.";
-      }
-      function giveKudos() {
-        if (!currentReaderPostId) return;
-        const kudos = readList(KUDOS_KEY);
-        if (kudos.includes(currentReaderPostId)) {
-          $("#reader-action-status").textContent = "You have already left kudos on this work.";
-          return;
-        }
-        saveList(KUDOS_KEY, [...kudos, currentReaderPostId]);
-        const button = document.querySelector('.reader-bottom-actions [data-reader-action="kudos"]');
-        if (button) button.textContent = "Kudos left";
-        $("#reader-action-status").textContent = "Kudos left. Thank you for supporting this work.";
       }
       async function shareCurrentWork() {
         const post = readList(POSTS_KEY).find(item => item.id === currentReaderPostId);
@@ -905,7 +978,6 @@
         else if (action === "chapter-index") document.querySelector("#reader-chapter-index")?.scrollIntoView({ behavior: "smooth", block: "start" });
         else if (action === "bookmark") toggleBookmark();
         else if (action === "later") toggleReadLater();
-        else if (action === "kudos") giveKudos();
         else if (action === "share") shareCurrentWork();
         else if (action === "download") downloadCurrentWork();
         else if (action === "subscribe") $("#reader-action-status").textContent = "Subscriptions are not available in this standalone version.";
@@ -915,6 +987,141 @@
         $("#draft-list").hidden = !isAdmin || drafts.length === 0;
         $("#draft-feed").innerHTML = drafts.map(draft => `<div class="draft-row"><span>${escapeHtml(draft.title || "Untitled draft")}</span><span><button class="form-button" type="button" data-edit="${escapeHtml(draft.id)}" data-draft="true">Edit</button> <button class="form-button" type="button" data-delete-draft="${escapeHtml(draft.id)}">Delete</button></span></div>`).join("");
       }
+      function getVisiblePosts() {
+        return readList(POSTS_KEY).filter(post => !post.registeredOnly || isAdmin)
+          .sort((a, b) => String(b.date || b.createdAt || "").localeCompare(String(a.date || a.createdAt || "")));
+      }
+      function getTagEntries(sortMode = "alpha") {
+        const counts = new Map();
+        const latest = new Map();
+        getVisiblePosts().forEach(post => (post.tags || []).forEach(tag => {
+          const clean = String(tag).trim();
+          if (!clean) return;
+          counts.set(clean, (counts.get(clean) || 0) + 1);
+          const stamp = String(post.date || post.createdAt || "");
+          if (!latest.has(clean) || stamp > latest.get(clean)) latest.set(clean, stamp);
+        }));
+        const entries = Array.from(counts.entries());
+        if (sortMode === "popular") entries.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+        else if (sortMode === "recent") entries.sort((a, b) => (latest.get(b[0]) || "").localeCompare(latest.get(a[0]) || "") || a[0].localeCompare(b[0]));
+        else entries.sort((a, b) => a[0].localeCompare(b[0]));
+        return entries;
+      }
+      function renderTagChips(entries) {
+        if (!entries.length) return '<p class="empty-state">There are no tags to show yet.</p>';
+        return `<ul class="archive-chip-list">${entries.map(([tag, count]) => `<li><button class="archive-chip" type="button" data-filter-tag="${escapeHtml(tag)}">${escapeHtml(tag)} <small>(${count})</small></button></li>`).join("")}</ul>`;
+      }
+      function renderPeople(query = "") {
+        const people = new Map();
+        getVisiblePosts().forEach(post => {
+          const name = String(post.author || "Oki").trim();
+          people.set(name, (people.get(name) || 0) + 1);
+        });
+        return Array.from(people.entries()).filter(([name]) => name.toLowerCase().includes(query.toLowerCase()))
+          .sort((a, b) => a[0].localeCompare(b[0]));
+      }
+      function renderPostResults(posts, emptyText = "No matching posts were found.") {
+        if (!posts.length) return `<p class="empty-state">${escapeHtml(emptyText)}</p>`;
+        return posts.map(post => cardMarkup(post)).join("");
+      }
+      function closeNavMenus() {
+        $$(".nav-item").forEach(item => {
+          item.classList.remove("dropdown-open");
+          item.querySelector(":scope > a")?.setAttribute("aria-expanded", "false");
+        });
+        $(".nav-bar").classList.remove("menu-open");
+      }
+      function renderArchivePage(state = {}) {
+        const page = { view: "search", scope: "posts", query: "", ...state };
+        currentPageState = page;
+        $("#home-layout").hidden = true;
+        $("#reader-view").hidden = true;
+        $("#editor-view").hidden = true;
+        $("#archive-view").hidden = false;
+        closeNavMenus();
+        updateDocumentTitle(page);
+
+        const heading = page.title || (page.view === "search" ? "Search" : page.view === "tags" ? "Tags" : page.view === "browse" ? "Browse" : "About Bo3");
+        $("#archive-heading").textContent = heading;
+        $("#archive-description").textContent = page.description || "Explore posts, tags, series, and collections on Blog of Oki’s Own.";
+        $("#archive-search-form").hidden = !["search", "browse"].includes(page.view);
+        $("#archive-search-scope").value = page.scope || "posts";
+        $("#archive-search-input").value = page.query || "";
+        $("#archive-filters").innerHTML = "";
+        const results = $("#archive-results");
+        const posts = getVisiblePosts();
+
+        if (page.view === "tags") {
+          const sort = page.mode || "alpha";
+          const entries = getTagEntries(sort);
+          results.innerHTML = `<h2>${sort === "popular" ? "Most Used Tags" : sort === "recent" ? "Recently Used Tags" : "All Tags"}</h2><p class="archive-count">${entries.length} tags</p>${renderTagChips(entries)}`;
+        } else if (page.view === "search") {
+          const query = String(page.query || "").trim().toLowerCase();
+          if (page.scope === "tags") {
+            const entries = getTagEntries("alpha").filter(([tag]) => !query || tag.toLowerCase().includes(query));
+            results.innerHTML = `<h2>Tags</h2><p class="archive-count">${entries.length} matching tags</p>${renderTagChips(entries)}`;
+          } else if (page.scope === "people") {
+            const people = renderPeople(query);
+            results.innerHTML = `<h2>People</h2><p class="archive-count">${people.length} matching people</p>${people.length ? `<ul class="archive-chip-list">${people.map(([name, count]) => `<li><button class="archive-chip" type="button" data-search-person="${escapeHtml(name)}">${escapeHtml(name)} <small>(${count} posts)</small></button></li>`).join("")}</ul>` : '<p class="empty-state">No matching people were found.</p>'}`;
+          } else {
+            const filtered = posts.filter(post => {
+              const haystack = [post.title, post.author, post.topic, post.summary, post.content, ...(post.tags || [])].join(" ").toLowerCase();
+              return (!query || haystack.includes(query)) && (!page.exactTag || (post.tags || []).some(tag => tag.toLowerCase() === page.exactTag.toLowerCase()));
+            });
+            results.innerHTML = `<h2>Posts</h2><p class="archive-count">${filtered.length} matching posts</p>${renderPostResults(filtered)}`;
+          }
+        } else if (page.view === "browse") {
+          const mode = page.mode || "recent";
+          if (mode === "series" || mode === "collections") {
+            const property = mode === "series" ? "series" : "collection";
+            if (page.value) {
+              const filtered = posts.filter(post => String(post[property] || "").trim() === page.value);
+              results.innerHTML = `<h2>${escapeHtml(page.value)}</h2><p class="archive-count">${filtered.length} posts</p>${renderPostResults(filtered, "There are no posts in this group yet.")}`;
+            } else {
+              const groups = new Map();
+              posts.forEach(post => {
+                const name = String(post[property] || "").trim();
+                if (name) groups.set(name, (groups.get(name) || 0) + 1);
+              });
+              const entries = Array.from(groups.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+              results.innerHTML = `<h2>${mode === "series" ? "Series" : "Collections"}</h2><p class="archive-count">${entries.length} ${mode}</p>${entries.length ? `<ul class="archive-chip-list">${entries.map(([name, count]) => `<li><button class="archive-chip" type="button" data-archive-filter="${mode}" data-archive-value="${escapeHtml(name)}">${escapeHtml(name)} <small>(${count} posts)</small></button></li>`).join("")}</ul>` : `<p class="empty-state">No ${mode} have been created yet.</p>`}`;
+            }
+          } else if (mode === "person") {
+            const filtered = posts.filter(post => String(post.author || "Oki") === page.value);
+            results.innerHTML = `<h2>Posts by ${escapeHtml(page.value)}</h2><p class="archive-count">${filtered.length} posts</p>${renderPostResults(filtered)}`;
+          } else {
+            const filtered = mode === "all" ? posts : posts.slice(0, 20);
+            results.innerHTML = `<h2>${mode === "all" ? "All Posts" : "Recent Posts"}</h2><p class="archive-count">${filtered.length} posts</p>${renderPostResults(filtered, "There are no posts yet.")}`;
+          }
+        } else if (page.view === "info") {
+          const info = page.mode === "faq"
+            ? '<h2>Frequently Asked Questions</h2><p><strong>How do I publish?</strong> An administrator can log in, choose New Post, fill in the post details, and publish.</p><p><strong>Where are posts saved?</strong> This standalone version stores posts in this browser on this device.</p><p><strong>How do I find something?</strong> Use the Search menu or the search box in the navigation bar.</p>'
+            : page.mode === "privacy"
+              ? '<h2>Privacy</h2><p>This standalone demo stores posts, drafts, bookmarks, and administrator settings in this browser’s local storage. The data is not automatically uploaded to a server.</p><p>Clearing this browser’s site data may remove locally stored posts and settings. This local administrator login is a demo feature, not secure public-site authentication.</p>'
+              : '<h2>About Blog of Oki’s Own</h2><p>Blog of Oki’s Own (Bo3) is a personal archive for posts, ideas, and things worth sharing.</p><p>Browse recent posts, explore tags, or search the archive to find something to read.</p>';
+          results.innerHTML = `<div class="archive-info-panel">${info}</div>`;
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function handleArchiveAction(action) {
+        const routes = {
+          "tags-all": { view: "tags", title: "All Tags", mode: "alpha" },
+          "tags-most": { view: "tags", title: "Most Used Tags", mode: "popular" },
+          "tags-recent": { view: "tags", title: "Recently Used Tags", mode: "recent" },
+          "browse-recent": { view: "browse", title: "Recent Posts", mode: "recent" },
+          "browse-all": { view: "browse", title: "All Posts", mode: "all" },
+          "browse-series": { view: "browse", title: "Series", mode: "series" },
+          "browse-collections": { view: "browse", title: "Collections", mode: "collections" },
+          "search-posts": { view: "search", title: "Search", scope: "posts" },
+          "search-tags": { view: "search", title: "Search", scope: "tags" },
+          "search-people": { view: "search", title: "Search", scope: "people" },
+          "about": { view: "info", title: "About Bo3", mode: "about" },
+          "faq": { view: "info", title: "FAQ", mode: "faq" },
+          "privacy": { view: "info", title: "Privacy", mode: "privacy" }
+        };
+        if (routes[action]) renderArchivePage(routes[action]);
+      }
+
       function renderAll() {
         renderTags();
         renderPosts();
@@ -932,7 +1139,6 @@
         $("#editor-mode-note").textContent = "Plain text editor. Line breaks are preserved in the published post.";
         setRadio("rating", "General");
         setRadio("notes-placement", "Beginning");
-        setRadio("comment-permission", "Registered users and guests");
       }
       function openEditor(post = null, isDraft = false) {
         if (!isAdmin) { openLogin(); return; }
@@ -953,18 +1159,17 @@
           $("#post-series").value = post.series || "";
           $("#post-date").value = post.date || "";
           $("#post-language").value = post.language || "English";
-          $("#registered-only").checked = !!post.registeredOnly;
-          $("#moderate-comments").checked = !!post.moderateComments;
           $("#post-content").value = post.content || "";
           $("#post-complete").checked = post.complete !== false;
           setRadio("rating", post.rating || "General");
           setRadio("notes-placement", post.notesPlacement || "Beginning");
-          setRadio("comment-permission", post.commentPermission || "Registered users and guests");
           $$('input[name="warnings"]').forEach(input => input.checked = (post.warnings || []).includes(input.value));
         }
         $("#home-layout").hidden = true;
+        $("#archive-view").hidden = true;
         $("#reader-view").hidden = true;
         $("#editor-view").hidden = false;
+        document.title = `${post ? (isDraft ? "Edit Draft" : "Edit Post") : "New Post"} | ${SITE_NAME}`;
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
       function collectPost() {
@@ -987,9 +1192,6 @@
           series: $("#post-series").value.trim(),
           date: $("#post-date").value || localDateValue(),
           language: $("#post-language").value,
-          registeredOnly: $("#registered-only").checked,
-          moderateComments: $("#moderate-comments").checked,
-          commentPermission: selectedRadio("comment-permission"),
           complete: $("#post-complete").checked,
           content: $("#post-content").value,
           author: getAdminRecord()?.username || "Oki",
@@ -1023,7 +1225,7 @@
         $("#editor-status").textContent = "Post published in this browser.";
         $("#editor-view").hidden = true;
         $("#reader-view").hidden = true;
-        $("#home-layout").hidden = false;
+        showHome();
         renderAll();
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
@@ -1080,33 +1282,42 @@
         }
       });
 
-      // Navigation tabs toggle their dropdowns. Search is hidden while any dropdown is open.
+      // AO3-style navigation: the top-level tabs open menus; menu entries open working archive views.
       $$(".nav-item > a").forEach(tab => {
         tab.setAttribute("aria-expanded", "false");
         tab.addEventListener("click", event => {
           event.preventDefault();
           const item = tab.parentElement;
           const wasOpen = item.classList.contains("dropdown-open");
-          $$(".nav-item").forEach(navItem => {
-            navItem.classList.remove("dropdown-open");
-            navItem.querySelector(":scope > a")?.setAttribute("aria-expanded", "false");
-          });
+          closeNavMenus();
           if (!wasOpen) {
             item.classList.add("dropdown-open");
             tab.setAttribute("aria-expanded", "true");
+            $(".nav-bar").classList.add("menu-open");
           }
-          $(".nav-bar").classList.toggle("menu-open", !wasOpen);
         });
       });
-      $$("a.inert-link").forEach(link => link.addEventListener("click", event => event.preventDefault()));
-      $("#search-form").addEventListener("submit", event => event.preventDefault());
+      $("#brand-home").addEventListener("click", event => {
+        event.preventDefault();
+        const cleanUrl = window.location.href.split("#")[0];
+        if (window.location.href !== cleanUrl) window.location.assign(cleanUrl);
+        else window.location.reload();
+      });
+      $("#search-form").addEventListener("submit", event => {
+        event.preventDefault();
+        renderArchivePage({ view: "search", title: "Search", scope: "posts", query: $("#work-search-input").value.trim() });
+      });
+      $("#archive-search-form").addEventListener("submit", event => {
+        event.preventDefault();
+        renderArchivePage({ ...currentPageState, view: "search", title: "Search", scope: $("#archive-search-scope").value, query: $("#archive-search-input").value.trim() });
+      });
 
       // Post editor actions.
       $("#post-form").addEventListener("submit", publishPost);
       $("#save-draft").addEventListener("click", saveDraft);
       $("#preview-post").addEventListener("click", previewPost);
-      $("#back-home").addEventListener("click", () => { $("#editor-view").hidden = true; $("#home-layout").hidden = false; renderAll(); });
-      $("#cancel-edit").addEventListener("click", () => { $("#editor-view").hidden = true; $("#home-layout").hidden = false; renderAll(); });
+      $("#back-home").addEventListener("click", () => { showHome(); renderAll(); });
+      $("#cancel-edit").addEventListener("click", () => { showHome(); renderAll(); });
       $("#rich-mode").addEventListener("click", () => {
         editorMode = "rich"; $("#rich-mode").setAttribute("aria-pressed", "true"); $("#html-mode").setAttribute("aria-pressed", "false");
         $("#editor-mode-note").textContent = "Rich Text mode: use the formatting buttons below to add simple bold, italic, and paragraph markers.";
@@ -1119,6 +1330,28 @@
 
       // Delegated post actions keep newly rendered cards interactive.
       document.addEventListener("click", event => {
+        const archiveAction = event.target.closest("[data-archive-action]");
+        if (archiveAction) {
+          event.preventDefault();
+          handleArchiveAction(archiveAction.dataset.archiveAction);
+        }
+        const filterTag = event.target.closest("[data-filter-tag]");
+        if (filterTag) {
+          event.preventDefault();
+          const tag = filterTag.dataset.filterTag;
+          renderArchivePage({ view: "search", title: "Search", scope: "posts", query: tag, exactTag: tag, description: `Posts tagged “${tag}”.` });
+        }
+        const archiveFilter = event.target.closest("[data-archive-filter]");
+        if (archiveFilter) {
+          event.preventDefault();
+          const mode = archiveFilter.dataset.archiveFilter;
+          renderArchivePage({ view: "browse", title: archiveFilter.dataset.archiveValue, mode, value: archiveFilter.dataset.archiveValue });
+        }
+        const personFilter = event.target.closest("[data-search-person]");
+        if (personFilter) {
+          event.preventDefault();
+          renderArchivePage({ view: "browse", title: personFilter.dataset.searchPerson, mode: "person", value: personFilter.dataset.searchPerson });
+        }
         const inertLink = event.target.closest("a.inert-link");
         if (inertLink) event.preventDefault();
         const readerAction = event.target.closest("[data-reader-action]");
@@ -1157,6 +1390,7 @@
       if (localStorage.getItem(SESSION_KEY) === "1") isAdmin = true;
       updateLoginMode();
       refreshAccountLinks();
+      showHome();
       renderAll();
       const deepLinkedPostId = decodeURIComponent(window.location.hash.slice(1));
       if (deepLinkedPostId) openReader(deepLinkedPostId);
