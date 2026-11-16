@@ -554,7 +554,6 @@
           <section class="account-panel" aria-labelledby="manage-heading">
             <h2 id="manage-heading">Welcome to Bo3</h2>
             <p>Read the latest posts, explore the tags used on the blog, or log in as the administrator to write and manage posts.</p>
-            <button class="panel-action" id="home-login-button" type="button">Admin Log In</button>
           </section>
 
           <section class="recent-posts" aria-labelledby="recent-heading">
@@ -842,14 +841,12 @@
         if (!isAdmin) {
           holder.innerHTML = '<button type="button" id="open-login">Log In</button>';
           $("#open-login").addEventListener("click", openLogin);
-          $("#home-login-button").hidden = false;
           return;
         }
         const record = getAdminRecord();
         holder.innerHTML = `<span>Admin: ${escapeHtml(record?.username || "Administrator")}</span><button type="button" id="new-post-button">New Post</button><button type="button" id="logout-button">Log Out</button>`;
         $("#new-post-button").addEventListener("click", () => openEditor());
         $("#logout-button").addEventListener("click", logout);
-        $("#home-login-button").hidden = true;
       }
       function logout() {
         isAdmin = false;
@@ -1382,7 +1379,6 @@
 
       // Header login controls.
       $("#open-login").addEventListener("click", openLogin);
-      $("#home-login-button").addEventListener("click", openLogin);
       $("#close-login").addEventListener("click", () => { $("#login-panel").hidden = true; });
       $("#reader-back").addEventListener("click", closeReader);
       $("#reader-back-bottom").addEventListener("click", closeReader);
