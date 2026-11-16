@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blog of Oki's Own</title>
+  <style>
+    :root {
+      --red: #990000;
+      --red-dark: #700000;
+      --red-link: #900;
+      --ink: #2a2a2a;
+      --muted: #666;
+      --line: #bbb;
+      --soft-line: #ddd;
+      --panel: #eee;
+      --panel-light: #f7f7f7;
+      --white: #fff;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: #fff; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #fff;
+      font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Helvetica, sans-serif;
+      font-size: 0.875rem;
+      line-height: 1.45;
+    }
+    a { color: var(--red-link); text-decoration: underline; cursor: pointer; }
+    a:hover, a:focus { color: #000; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .page { position: relative; width: min(100% - 2rem, 1240px); margin: 0 auto; }
+
+    /* Masthead: retained from the original Bo3 page. */
+    .masthead {
+      min-height: 58px; display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; padding: 0.45rem 0.35rem 0.4rem; border-bottom: 1px solid var(--soft-line);
+    }
+    .brand { display: flex; align-items: center; gap: 0.85rem; min-width: 0; color: var(--red); text-decoration: none; }
+    .brand-mark {
+      display: inline-block; color: var(--red); font-family: Georgia, "Times New Roman", serif;
+      font-size: 2rem; font-weight: 700; letter-spacing: -0.12em; line-height: 0.95; white-space: nowrap;
+    }
+    .brand-name { display: flex; align-items: center; height: 2rem; color: var(--red); font-family: Georgia, "Times New Roman", serif; font-size: 2rem; line-height: 1; white-space: nowrap; }
+    .brand-logo { display: block; width: auto; height: 2rem; max-width: 100%; object-fit: contain; }
+    .account-links { display: flex; align-items: center; gap: 1rem; white-space: nowrap; font-size: 0.85rem; color: #000; }
+    .account-links a, .account-links button { color: #000; text-decoration: none; }
+    .account-links button { padding: 0; background: none; border: 0; }
+    .account-links button:hover, .account-links a:hover { color: #333; text-decoration: underline; }
+
+    /* Original full-width red navigation, with one consolidated texture layer. */
+    .nav-bar {
+      position: relative; z-index: 5; width: 100vw; min-height: 36px; margin-left: calc(50% - 50vw);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 0.65rem;
+      /* Extra lower breathing room; controls sit higher within the red header. */
+      padding: 2px max(0.5rem, calc((100vw - 1200px) / 2)) 10px; color: #fff;
+      /* Keep the full navigation bar solid red; the dark gradient is a short overlay at its bottom. */
+      background: #990000;
+      isolation: isolate;
+    }
+    .nav-bar::before {
+      position: absolute; inset: 0; z-index: 0; content: ""; pointer-events: none;
+      /* SVG turbulence produces a seamless Perlin-style grain texture. */
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='perlin'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23perlin)' opacity='.75'/%3E%3C/svg%3E");
+      background-repeat: repeat; background-size: 180px 180px; opacity: 0.20; mix-blend-mode: soft-light;
+    }
+    .nav-bar::after {
+      /* Small textured gradient along the bottom edge of the red header. */
+      position: absolute; inset-inline: 0; bottom: 0; height: 20%; z-index: 0; content: ""; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='perlin'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23perlin)' opacity='.75'/%3E%3C/svg%3E"), linear-gradient(to bottom, rgba(67, 0, 0, 0) 0%, rgba(67, 0, 0, 0.55) 45%, #430000 100%);
+      background-size: 110px 110px, 100% 100%; background-repeat: repeat, no-repeat;
+      background-blend-mode: soft-light, normal; opacity: 0.9;
+    }
+    .nav-list { position: relative; z-index: 1; display: flex; flex-flow: row nowrap; align-items: stretch; gap: 0; margin: 0; padding: 0; list-style: none; white-space: nowrap; }
+    .nav-item { position: static; flex: 0 0 auto; }
+    .nav-item > a {
+      position: relative; display: flex; align-items: center; min-height: 36px; padding: 0.42rem 0.85rem;
+      color: #fff; text-decoration: none; border: 0; white-space: nowrap;
+    }
+    .nav-item.dropdown-open > a {
+      color: #333; background: #d9d9d9; background-image: none; box-shadow: none;
+    }
+    .nav-item.dropdown-open > a::after { border-color: #000; }
+    .nav-bar.menu-open .work-search { display: none; }
+    .dropdown {
+      position: absolute; top: 100%; left: 50%; display: none; width: 100vw; min-width: 0;
+      max-height: min(70vh, 680px); overflow-y: auto; margin: 0; padding: 0.25rem 0 0.4rem;
+      transform: translateX(-50%); list-style: none; background: #eee;
+      border-bottom: 1px solid #aaa; box-shadow: 0 3px 7px rgba(0,0,0,0.2); z-index: 10;
+    }
+    .nav-item.dropdown-open > .dropdown { display: block; }
+    .dropdown li { margin: 0 0.8rem; border-bottom: 2px solid #aaa; }
+    .dropdown li:last-child { border-bottom: 0; }
+    .dropdown a { display: block; width: 100%; padding: 0.38rem 0.8rem; color: var(--red-link); text-decoration: none; white-space: normal; }
+    .dropdown a:hover, .dropdown a:focus { background: #c9c9c9; }
+    .work-search { position: relative; z-index: 1; display: flex; align-items: center; align-self: flex-start; gap: 0.4rem; margin: 2px 0 0; padding: 0; }
+    .work-search input[type="search"] {
+      width: clamp(150px, 22vw, 280px); height: 27px; padding: 0.25rem 0.85rem; color: #333;
+      background: #fff; border: 1px solid #bbb; border-radius: 999px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.12); outline: none; appearance: none;
+    }
+    .work-search input[type="search"]:focus { background: linear-gradient(to bottom, #ededed 0%, #e5e5e5 100%); box-shadow: inset 0 1px 4px rgba(0,0,0,0.28); }
+    .work-search button {
+      height: 27px; padding: 0.2rem 0.85rem; color: #333;
+      background: linear-gradient(#fff, #ddd); border: 1px solid #aaa; border-radius: 4px; box-shadow: none; cursor: pointer;
+    }
+
+    /* Homepage columns: the original proportions and typography are retained. */
+    .home-layout { display: grid; grid-template-columns: minmax(260px, 0.92fr) minmax(0, 1.8fr); gap: 2.1rem; align-items: start; padding: 1.55rem 0.35rem 2rem; }
+    .sidebar h2, .section-heading, .follow-heading {
+      margin: 0 0 0.65rem; padding: 0 0 0.35rem; color: var(--red);
+      font-family: Georgia, "Times New Roman", serif; font-size: 1.25rem; font-weight: normal;
+      line-height: 1.2; border-bottom: 1px solid var(--line);
+    }
+    .tag-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.1rem; row-gap: 0.42rem; margin: 0; padding: 0.15rem 0 1.5rem; list-style: none; }
+    .tag-list li { min-width: 0; overflow-wrap: anywhere; }
+    .tag-count { color: var(--muted); font-size: 0.75rem; }
+    .empty-state { color: var(--muted); font-style: italic; }
+    .welcome { min-width: 0; }
+    .intro {
+      margin: 0.2rem 0 0.75rem; color: #292929; font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.45rem, 2.1vw, 1.9rem); font-weight: normal; line-height: 1.32; text-align: center;
+    }
+    .stats { margin: 0.7rem 0 0.55rem; color: #444; font-size: 0.92rem; text-align: center; }
+    .project-line { margin: 0.55rem 0 1.1rem; color: #444; font-size: 0.83rem; text-align: center; }
+    .account-panel { margin: 0.9rem 0 1.65rem; padding: 0.85rem 1rem 0.95rem; background: #eee; border: 1px solid #bbb; border-radius: 2px; }
+    .account-panel h2 { margin: 0 0 0.35rem; font-family: Georgia, "Times New Roman", serif; font-size: 1.08rem; font-weight: normal; }
+    .account-panel p { margin: 0.4rem 0 0.65rem; }
+    .panel-action, .form-button {
+      padding: 0.32rem 0.8rem; color: #333; background: linear-gradient(#fff, #e5e5e5);
+      border: 1px solid #999; border-radius: 3px; box-shadow: 0 1px 1px rgba(0,0,0,0.08);
+    }
+    .panel-action:active, .form-button:active { background: #e3e3e3; box-shadow: inset 0 1px 4px rgba(0,0,0,0.28); }
+    .recent-posts { margin-top: 1.6rem; }
+    .post-card { position: relative; margin: 0.75rem 0; padding: 0.85rem; border: 1px solid #ccc; background: #fff; }
+    .post-card-head { display: grid; grid-template-columns: 148px minmax(0, 1fr) auto; gap: 0.8rem; align-items: start; }
+    .symbols {
+      display: grid; grid-template-columns: repeat(2, 37px); grid-template-rows: repeat(2, 37px); gap: 5px;
+      width: max-content; padding: 0; border: 0; background: transparent; cursor: pointer;
+    }
+    .symbols:focus-visible { outline: 2px solid #1760ae; outline-offset: 3px; }
+    .symbol {
+      display: flex; align-items: center; justify-content: center; width: 37px; height: 37px;
+      border: 1px solid rgba(0,0,0,0.12); color: #fff; font-family: Arial, sans-serif; font-size: 1.15rem; font-weight: bold;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+    }
+    .symbol-rating { background: #990000; }
+    .symbol-category { background: #1760ae; }
+    .symbol-warning { color: #555; background: linear-gradient(#fff, #e5e5e5); text-shadow: none; }
+    .symbol-status { background: #75aa00; font-size: 1.35rem; }
+    .post-title { margin: 0 0 0.15rem; font-family: Georgia, "Times New Roman", serif; font-size: 1.35rem; font-weight: normal; line-height: 1.25; }
+    .post-title button { padding: 0; color: var(--red-link); background: none; border: 0; text-align: left; text-decoration: underline; font: inherit; }
+    .post-byline { color: #333; font-family: Georgia, "Times New Roman", serif; font-size: 1rem; }
+    .post-date { color: #444; font-family: monospace; font-size: 0.95rem; white-space: nowrap; }
+    .post-fandom { margin: 0.25rem 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.03rem; }
+    .post-tags { margin: 0.45rem 0 0; line-height: 1.6; }
+    .post-tags span { display: inline-block; margin: 0 0.25rem 0.2rem 0; padding: 0.08rem 0.28rem; background: #eee; border-bottom: 1px dotted #888; }
+    .post-summary { margin: 0.65rem 0 0.3rem; white-space: pre-wrap; }
+    .post-content { margin-top: 0.65rem; padding-top: 0.55rem; border-top: 1px solid #ddd; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .symbol-explanation {
+      margin: 0.55rem 0 0.7rem; padding: 0.65rem 0.8rem; background: #f1f1f1; border: 1px solid #bbb;
+      font-size: 0.82rem;
+    }
+    .symbol-explanation[hidden] { display: none !important; }
+    .symbol-explanation p { margin: 0.18rem 0; }
+    .post-actions { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.7rem; }
+    .post-actions button { padding: 0.2rem 0.55rem; border: 1px solid #aaa; border-radius: 3px; background: linear-gradient(#fff,#e6e6e6); color: #333; font-size: 0.8rem; }
+    .admin-note { color: #555; font-size: 0.8rem; }
+    .footer {
+      width: 100vw; margin: 0 0 0 calc(50% - 50vw); padding: 1rem max(1rem, calc((100vw - 1200px) / 2)) 1.25rem;
+      color: #fff; background: #990000; border-top: 1px solid #700; font-size: 0.76rem;
+    }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: 0.45rem; }
+    .footer a { color: #fff; }
+
+    /* Full-page post reader, inspired by the supplied archive screenshot. */
+    .reader-view { max-width: none; margin: 0 auto; padding: 1rem 0.35rem 2rem; }
+    .reader-view[hidden] { display: none !important; }
+    .reader-toolbar, .reader-bottom-actions {
+      display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 0.35rem;
+      margin: 0 0 0.45rem; padding: 0.25rem 0;
+    }
+    .reader-toolbar-row { display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem; width: 100%; }
+    .reader-toolbar button, .reader-bottom-actions button {
+      min-height: 26px; padding: 0.2rem 0.62rem; color: #333; background: linear-gradient(#fff,#e6e6e6);
+      border: 1px solid #aaa; border-radius: 3px; font-size: 0.78rem;
+    }
+    .reader-toolbar button:disabled, .reader-bottom-actions button:disabled { color: #888; cursor: not-allowed; opacity: 0.85; }
+    .reader-metadata { padding: 0.8rem 0.9rem; border: 1px solid #ccc; background: #fff; box-shadow: none; }
+    .reader-meta-top { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 0.7rem; }
+    .reader-meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.48rem 1.2rem; }
+    .reader-meta-item { min-width: 0; overflow-wrap: anywhere; }
+    .reader-meta-item strong { display: block; font-size: 0.78rem; }
+    .reader-meta-item span { display: block; }
+    .reader-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+    .reader-tags span { padding: 0.08rem 0.32rem; background: #eee; border-bottom: 1px dotted #888; }
+    .reader-title { margin: 1.5rem 0 0.15rem; color: #222; text-align: center; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.65rem, 3vw, 2.1rem); font-weight: normal; line-height: 1.25; }
+    .reader-byline { margin: 0 0 1.5rem; color: #444; text-align: center; font-family: Georgia, "Times New Roman", serif; }
+    .reader-section-heading { margin: 1rem 0 0.35rem; padding-bottom: 0.25rem; color: #333; border-bottom: 1px solid #aaa; font-family: Georgia, "Times New Roman", serif; font-size: 1.02rem; font-weight: normal; }
+    .reader-summary { white-space: pre-wrap; }
+    .reader-divider { margin: 1.25rem 0; border: 0; border-top: 1px solid #aaa; }
+    .reader-chapter-heading { margin: 1.2rem 0 0.55rem; text-align: center; font-family: Georgia, "Times New Roman", serif; font-size: 1.25rem; font-weight: normal; text-decoration: underline; }
+    .reader-post-text { color: #222; font-family: Georgia, "Times New Roman", serif; font-size: 1.04rem; line-height: 1.7; white-space: normal; overflow-wrap: anywhere; }
+    .reader-post-text p { margin: 0 0 1rem; }
+    .reader-notes { margin: 0.8rem 0; white-space: pre-wrap; }
+    .reader-bottom-actions { justify-content: flex-start; margin-top: 1.4rem; border-top: 1px dotted #aaa; padding-top: 0.55rem; }
+    .reader-action-status { min-height: 1.1rem; margin: 0.15rem 0 0.7rem; color: #555; font-size: 0.78rem; }
+    .reader-chapter-heading { scroll-margin-top: 1rem; }
+
+    /* AO3-inspired login panel, styled to sit over the unchanged homepage. */
+    .login-panel {
+      position: absolute; top: 5px; right: 0; z-index: 30; width: min(420px, calc(100vw - 24px));
+      padding: 0.85rem 1rem 0.9rem; color: #333; background: linear-gradient(to bottom, #dedede, #c9c9c9);
+      border: 1px solid #aaa; box-shadow: 0 3px 9px rgba(0,0,0,0.28);
+    }
+    .login-panel[hidden], .editor-view[hidden], .home-layout[hidden], .reader-view[hidden] { display: none !important; }
+    .login-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.35rem; }
+    .login-panel h2 { margin: 0; color: #222; font-family: Georgia, "Times New Roman", serif; font-size: 1.45rem; font-weight: normal; }
+    .close-panel { color: #444; background: transparent; border: 0; font-size: 1.2rem; }
+    .login-panel label { display: block; margin-top: 0.45rem; color: #333; font-size: 1rem; }
+    .login-panel input[type="text"], .login-panel input[type="password"] {
+      width: 100%; height: 40px; padding: 0.3rem 0.55rem; border: 2px solid #bbb; background: #fff;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.12); font-size: 1.05rem;
+    }
+    .login-options { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem 1rem; margin-top: 0.75rem; }
+    .login-options label { display: flex; align-items: center; gap: 0.35rem; margin: 0; }
+    .login-message { margin: 0.55rem 0 0; color: #600; font-size: 0.8rem; }
+    .login-foot { margin-top: 0.5rem; font-size: 0.85rem; }
+    .login-foot button { padding: 0; color: #222; background: none; border: 0; text-decoration: underline; }
+
+    /* Post editor: grey fieldsets and compact labels in the style of the supplied form screenshot. */
+    .editor-view { padding: 1.35rem 0.35rem 2rem; }
+    .editor-heading { margin: 0 0 0.25rem; color: #222; font-family: Georgia, "Times New Roman", serif; font-size: 1.8rem; font-weight: normal; }
+    .required-note { margin: 0 0 0.9rem; color: #700; font-size: 0.8rem; }
+    .editor-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 0.7rem; }
+    .editor-fieldset { min-width: 0; margin: 0 0 0.9rem; padding: 0.65rem 0.8rem 0.8rem; background: #e7e7e7; border: 1px solid #aaa; }
+    .editor-fieldset legend { padding: 0.1rem 0.4rem; color: #333; background: #fff; border: 1px solid #aaa; font-size: 0.8rem; }
+    .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem 0.9rem; }
+    .field { min-width: 0; margin: 0.2rem 0 0.55rem; }
+    .field.full { grid-column: 1 / -1; }
+    .field label, .field-label { display: block; margin-bottom: 0.2rem; color: #333; font-size: 0.82rem; font-weight: bold; }
+    .field input[type="text"], .field input[type="date"], .field select, .field textarea {
+      display: block; width: 100%; max-width: 100%; padding: 0.35rem 0.45rem; color: #222;
+      border: 1px solid #bbb; background: #fff; box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .field input[type="date"] {
+      display: block; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box;
+      padding-right: 0.22rem; overflow: hidden;
+    }
+    .field input[type="date"]::-webkit-calendar-picker-indicator { margin: 0; padding: 0; flex: 0 0 auto; }
+    .field input[type="date"]::-webkit-datetime-edit { min-width: 0; padding: 0; }
+    .field textarea { min-height: 76px; resize: vertical; }
+    .field textarea.work-text { min-height: 310px; font-family: Georgia, "Times New Roman", serif; font-size: 1rem; line-height: 1.5; }
+    .choice-list { display: flex; flex-wrap: wrap; gap: 0.35rem 0.85rem; margin: 0.25rem 0 0.5rem; }
+    .choice-list label { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.82rem; }
+    .choice-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.15rem 1rem; }
+    .choice-columns label { display: flex; align-items: flex-start; gap: 0.3rem; margin: 0.12rem 0; font-size: 0.82rem; }
+    .field-hint { margin: 0.2rem 0 0; color: #666; font-size: 0.72rem; }
+    .text-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.3rem; }
+    .text-tools button, .editor-actions button {
+      padding: 0.3rem 0.7rem; color: #333; background: linear-gradient(#fff,#e4e4e4);
+      border: 1px solid #aaa; border-radius: 3px;
+    }
+    .text-tools button[aria-pressed="true"] { background: #d0d0d0; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
+    .editor-actions { display: flex; flex-wrap: wrap; gap: 0.45rem; padding: 0.55rem 0; }
+    .editor-actions .primary { color: #fff; background: linear-gradient(#a00000,#790000); border-color: #700; }
+    .preview-box { margin: 0.7rem 0; padding: 0.8rem; background: #fff; border: 1px solid #bbb; }
+    .preview-box h3 { margin: 0 0 0.4rem; color: var(--red); font-family: Georgia, "Times New Roman", serif; font-weight: normal; }
+    .preview-box pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-family: inherit; }
+    .draft-list { margin-top: 1rem; padding: 0.65rem; background: #eee; border: 1px solid #bbb; }
+    .draft-list h3 { margin: 0 0 0.4rem; color: var(--red); font-family: Georgia, "Times New Roman", serif; font-weight: normal; }
+    .draft-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; padding: 0.35rem 0; border-top: 1px solid #ccc; }
+    .status-line { min-height: 1.2rem; color: #650000; font-size: 0.82rem; }
+
+    @media (max-width: 760px) {
+      .page { width: min(100% - 0.75rem, 980px); }
+      .masthead { min-height: 54px; }
+      .brand { gap: 0.55rem; }
+      .brand-mark { font-size: 1.8rem; }
+      .brand-name { height: 1.55rem; font-size: 1.55rem; line-height: 1; white-space: normal; }
+      .brand-logo { height: 1.55rem; }
+      .account-links { gap: 0.55rem; font-size: 0.78rem; }
+      .nav-bar { width: 100vw; margin-left: calc(50% - 50vw); flex-wrap: wrap; align-items: flex-start; padding: 2px 0.5rem 0.65rem; }
+      .nav-list { width: 100%; flex: 0 0 100%; flex-wrap: nowrap; }
+      .nav-item { flex: 1 0 auto; }
+      .nav-item > a { justify-content: center; padding: 0.42rem 0.45rem; font-size: 0.82rem; }
+      .work-search { width: 100%; align-self: flex-start; margin: 1px 0 0; padding: 0; }
+      .work-search input[type="search"] { width: 100%; flex: 1; }
+      .home-layout { grid-template-columns: 1fr; gap: 1.5rem; padding-top: 1.15rem; }
+      .welcome { grid-row: 1; }
+      .sidebar { grid-row: 2; }
+      .tag-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .post-card-head { grid-template-columns: 84px minmax(0,1fr); }
+      .post-date { grid-column: 2; }
+      .reader-meta-grid { grid-template-columns: 1fr; }
+      .reader-view { padding-top: 0.8rem; }
+      .reader-toolbar-row { gap: 0.25rem; }
+      .reader-toolbar button, .reader-bottom-actions button { font-size: 0.75rem; padding-inline: 0.5rem; }
+      .login-panel { position: fixed; top: 8px; right: 8px; }
+    }
+    @media (max-width: 520px) {
+      .field-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .choice-columns { grid-template-columns: 1fr; }
+      .post-card-head { grid-template-columns: 78px minmax(0,1fr); gap: 0.55rem; }
+      .symbols { grid-template-columns: repeat(2, 34px); grid-template-rows: repeat(2, 34px); gap: 4px; }
+      .symbol { width: 34px; height: 34px; }
+    }
+    @media (max-width: 420px) {
+      .masthead { align-items: flex-start; }
+      .brand { align-items: flex-start; }
+      .brand-mark { font-size: 1.9rem; }
+      .brand-name { height: 1.35rem; font-size: 1.35rem; line-height: 1; max-width: 190px; }
+      .brand-logo { height: 1.35rem; }
+      .account-links { flex-direction: column; align-items: flex-end; gap: 0.25rem; }
+      .nav-item > a { font-size: 0.75rem; padding-inline: 0.25rem; }
+      .tag-list { column-gap: 0.7rem; font-size: 0.82rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <a class="brand inert-link" href="#" aria-label="Bo3 home">
+        <img class="brand-logo" src="/bo3-logo.png" alt="Bo3">
+        <span class="brand-name">Blog of Oki’s Own</span>
+      </a>
+      <div class="account-links" aria-label="Account" id="account-links">
+        <button type="button" id="open-login">Log In</button>
+      </div>
+    </header>
+
+    <section class="login-panel" id="login-panel" aria-label="Admin login" hidden>
+      <div class="login-panel-head">
+        <h2 id="login-heading">Log In</h2>
+        <button class="close-panel" id="close-login" type="button" aria-label="Close login">×</button>
+      </div>
+      <form id="login-form">
+        <label for="admin-username">Username or email:</label>
+        <input id="admin-username" name="username" type="text" autocomplete="username" required>
+        <label for="admin-password">Password:</label>
+        <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+        <div class="login-options">
+          <label><input id="remember-admin" type="checkbox"> Remember Me</label>
+          <button class="form-button" type="submit" id="login-submit">Log In</button>
+        </div>
+        <p class="login-message" id="login-message" role="status"></p>
+      </form>
+      <p class="admin-note">First use: choose a username and password to set up the administrator account in this browser. This local demo is not secure authentication for a public website.</p>
+    </section>
+
+    <nav class="nav-bar" aria-label="Main navigation">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a class="inert-link" href="#">Tags</a>
+          <ul class="dropdown">
+            <li><a class="inert-link" href="#">All Tags</a></li>
+            <li><a class="inert-link" href="#">Most Used Tags</a></li>
+            <li><a class="inert-link" href="#">Recently Used Tags</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="inert-link" href="#">Browse</a>
+          <ul class="dropdown">
+            <li><a class="inert-link" href="#">Recent Posts</a></li>
+            <li><a class="inert-link" href="#">All Posts</a></li>
+            <li><a class="inert-link" href="#">Series</a></li>
+            <li><a class="inert-link" href="#">Collections</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="inert-link" href="#">Search</a>
+          <ul class="dropdown">
+            <li><a class="inert-link" href="#">Posts</a></li>
+            <li><a class="inert-link" href="#">Tags</a></li>
+            <li><a class="inert-link" href="#">People</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="inert-link" href="#">About</a>
+          <ul class="dropdown">
+            <li><a class="inert-link" href="#">About Bo3</a></li>
+            <li><a class="inert-link" href="#">FAQ</a></li>
+            <li><a class="inert-link" href="#">Privacy</a></li>
+          </ul>
+        </li>
+      </ul>
+      <form class="work-search" role="search" id="search-form">
+        <input type="search" aria-label="Search posts" autocomplete="off">
+        <button type="submit">Search</button>
+      </form>
+    </nav>
+
+    <main>
+      <div class="home-layout" id="home-layout">
+        <aside class="sidebar">
+          <section aria-labelledby="tags-heading">
+            <h2 id="tags-heading">Tags</h2>
+            <ul class="tag-list" id="tag-list">
+              <li class="empty-state">Tags will appear here when posts are published.</li>
+            </ul>
+          </section>
+        </aside>
+
+        <section class="welcome" aria-label="Welcome">
+          <h1 class="intro">A personal blog for posts, ideas, and things worth sharing.</h1>
+          <p class="stats" id="site-stats">0 posts&nbsp; | &nbsp;0 tags</p>
+          <p class="project-line">The Blog of Oki’s Own (Bo3) is a project of Oki.</p>
+
+          <section class="account-panel" aria-labelledby="manage-heading">
+            <h2 id="manage-heading">Welcome to Bo3</h2>
+            <p>Read the latest posts, explore the tags used on the blog, or log in as the administrator to write and manage posts.</p>
+            <button class="panel-action" id="home-login-button" type="button">Admin Log In</button>
+          </section>
+
+          <section class="recent-posts" aria-labelledby="recent-heading">
+            <h2 class="section-heading" id="recent-heading">Recent Posts</h2>
+            <div id="post-feed"><p class="empty-state">There are no posts yet.</p></div>
+          </section>
+          <section class="draft-list" id="draft-list" hidden>
+            <h3>Saved Drafts</h3>
+            <div id="draft-feed"></div>
+          </section>
+        </section>
+      </div>
+
+      <section class="reader-view" id="reader-view" hidden aria-label="Post reader">
+        <div class="reader-toolbar" aria-label="Work controls">
+          <div class="reader-toolbar-row">
+            <button type="button" data-reader-action="entire-work">Entire Work</button>
+            <button type="button" disabled aria-disabled="true">Next Chapter</button>
+            <button type="button" data-reader-action="chapter-index">Chapter Index ↓</button>
+          </div>
+          <div class="reader-toolbar-row">
+            <button type="button" id="reader-bookmark">Bookmark</button>
+            <button type="button" data-reader-action="later">Mark for Later</button>
+            <button type="button" data-reader-action="share">Share</button>
+          </div>
+          <div class="reader-toolbar-row">
+            <button type="button" data-reader-action="subscribe">Subscribe</button>
+            <button type="button" data-reader-action="download">Download</button>
+            <button type="button" id="reader-back" class="form-button">Back to Posts</button>
+          </div>
+        </div>
+        <p class="reader-action-status" id="reader-action-status" role="status" aria-live="polite"></p>
+        <article class="reader-work" id="reader-work"></article>
+        <div class="reader-bottom-actions">
+          <button type="button" data-reader-action="entire-work">Top</button>
+          <button type="button" disabled aria-disabled="true">Next Chapter</button>
+          <button type="button" data-reader-action="kudos">Kudos</button>
+          <button type="button" data-reader-action="bookmark">Bookmark</button>
+          <button type="button" id="reader-back-bottom" class="form-button">Back to Posts</button>
+        </div>
+      </section>
+
+      <section class="editor-view" id="editor-view" hidden>
+        <div class="editor-toolbar">
+          <div>
+            <h1 class="editor-heading" id="editor-heading">Post New Entry</h1>
+            <p class="required-note">* Required information</p>
+          </div>
+          <button class="form-button" id="back-home" type="button">Back to Home</button>
+        </div>
+        <form id="post-form">
+          <input type="hidden" id="editing-id">
+          <fieldset class="editor-fieldset">
+            <legend>Tags and Categories</legend>
+            <div class="field full">
+              <span class="field-label">Rating *</span>
+              <div class="choice-list">
+                <label><input type="radio" name="rating" value="General" checked> General Audiences</label>
+                <label><input type="radio" name="rating" value="Teen"> Teen And Up Audiences</label>
+                <label><input type="radio" name="rating" value="Mature"> Mature</label>
+                <label><input type="radio" name="rating" value="Explicit"> Explicit</label>
+                <label><input type="radio" name="rating" value="Not Rated"> Not Rated</label>
+              </div>
+            </div>
+            <div class="field full">
+              <span class="field-label">Content Warnings</span>
+              <div class="choice-columns">
+                <label><input type="checkbox" name="warnings" value="No Archive Warnings Apply"> No Archive Warnings Apply</label>
+                <label><input type="checkbox" name="warnings" value="Graphic Depictions of Violence"> Graphic Depictions of Violence</label>
+                <label><input type="checkbox" name="warnings" value="Major Character Death"> Major Character Death</label>
+                <label><input type="checkbox" name="warnings" value="Rape/Non-Con"> Rape/Non-Con</label>
+                <label><input type="checkbox" name="warnings" value="Underage"> Underage</label>
+                <label><input type="checkbox" name="warnings" value="Creator Chose Not To Use Warnings"> Creator Chose Not To Use Warnings</label>
+              </div>
+            </div>
+            <div class="field-grid">
+              <div class="field"><label for="post-topic">Topic</label><input type="text" id="post-topic" placeholder="Add a topic"></div>
+              <div class="field"><label for="post-category">Category</label><select id="post-category"><option value="Gen">Gen</option><option value="F/F">F/F</option><option value="F/M">F/M</option><option value="M/M">M/M</option><option value="Multi">Multi</option><option value="Other">Other</option></select></div>
+              <div class="field full"><label for="post-tags">Additional Tags *</label><input type="text" id="post-tags" placeholder="Add tags separated by commas" required><p class="field-hint">Use tags that describe this post. Existing tags will appear in the homepage tag list after publication.</p></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="editor-fieldset">
+            <legend>Post Preface</legend>
+            <div class="field-grid">
+              <div class="field full"><label for="post-title-input">Post Title *</label><input type="text" id="post-title-input" maxlength="255" required></div>
+              <div class="field full"><label for="post-creators">Co-creators</label><input type="text" id="post-creators" placeholder="Optional usernames"></div>
+              <div class="field full"><label for="post-summary">Summary / Description</label><textarea id="post-summary" maxlength="5000"></textarea></div>
+              <div class="field full"><label for="post-notes">Notes</label><textarea id="post-notes" placeholder="Optional notes for readers"></textarea></div>
+              <div class="field"><span class="field-label">Notes placement</span><div class="choice-list"><label><input type="radio" name="notes-placement" value="Beginning" checked> At the beginning</label><label><input type="radio" name="notes-placement" value="End"> At the end</label></div></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="editor-fieldset">
+            <legend>Associations</legend>
+            <div class="field-grid">
+              <div class="field"><label for="post-collection">Post to Collections / Challenges</label><input type="text" id="post-collection"></div>
+              <div class="field"><label for="post-gift">Gift this post to</label><input type="text" id="post-gift"></div>
+              <div class="field full"><label for="post-series">Series</label><input type="text" id="post-series" placeholder="Optional series name"></div>
+              <div class="field"><label for="post-date">Publication Date</label><input type="date" id="post-date"></div>
+              <div class="field"><label for="post-language">Language</label><select id="post-language"><option>English</option><option>Filipino</option><option>Japanese</option><option>Spanish</option><option>French</option><option>Other</option></select></div>
+              <div class="field full"><label><input type="checkbox" id="post-complete" checked> This post is complete</label></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="editor-fieldset">
+            <legend>Privacy and Comments</legend>
+            <div class="choice-columns">
+              <label><input type="checkbox" id="registered-only"> Only show this post to logged-in readers</label>
+              <label><input type="checkbox" id="moderate-comments"> Enable comment moderation</label>
+            </div>
+            <div class="field" style="margin-top:.6rem"><span class="field-label">Who can comment?</span><div class="choice-list"><label><input type="radio" name="comment-permission" value="Registered users and guests" checked> Registered users and guests</label><label><input type="radio" name="comment-permission" value="Registered users only"> Registered users only</label><label><input type="radio" name="comment-permission" value="No comments"> No comments</label></div></div>
+          </fieldset>
+
+          <fieldset class="editor-fieldset">
+            <legend>Post Text *</legend>
+            <div class="text-tools">
+              <button type="button" id="rich-mode" aria-pressed="true">Rich Text</button>
+              <button type="button" id="html-mode" aria-pressed="false">HTML</button>
+              <button type="button" data-wrap="**">Bold</button>
+              <button type="button" data-wrap="*">Italic</button>
+              <button type="button" data-wrap="\n\n">Paragraph</button>
+            </div>
+            <div class="field full"><textarea class="work-text" id="post-content" required placeholder="Write your post here..."></textarea><p class="field-hint" id="editor-mode-note">Plain text editor. Line breaks are preserved in the published post.</p></div>
+          </fieldset>
+
+          <div class="editor-actions">
+            <button class="primary" type="submit" id="publish-button">Publish Post</button>
+            <button type="button" id="save-draft">Save Draft</button>
+            <button type="button" id="preview-post">Preview</button>
+            <button type="button" id="cancel-edit">Cancel</button>
+          </div>
+          <p class="status-line" id="editor-status" role="status"></p>
+          <section class="preview-box" id="preview-box" hidden aria-live="polite">
+            <h3 id="preview-title"></h3><p id="preview-summary"></p><pre id="preview-content"></pre>
+          </section>
+        </form>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div>Bo3 — Blog of Oki’s Own</div>
+      <div class="footer-links">
+        <a class="inert-link" href="#">About</a><a class="inert-link" href="#">FAQ</a><a class="inert-link" href="#">Terms of Service</a>
+        <a class="inert-link" href="#">Privacy</a><a class="inert-link" href="#">Customize</a><a class="inert-link" href="#">Default</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+      const POSTS_KEY = "bo3_posts_v1";
+      const DRAFTS_KEY = "bo3_drafts_v1";
+      const ADMIN_KEY = "bo3_admin_v1";
+      const SESSION_KEY = "bo3_admin_session_v1";
+      const BOOKMARKS_KEY = "bo3_bookmarks_v1";
+      const READ_LATER_KEY = "bo3_read_later_v1";
+      const KUDOS_KEY = "bo3_kudos_v1";
+      const $ = (selector) => document.querySelector(selector);
+      const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+      let isAdmin = sessionStorage.getItem(SESSION_KEY) === "1";
+      let editorMode = "rich";
+      let currentReaderPostId = "";
+
+      function readList(key) {
+        try { const value = JSON.parse(localStorage.getItem(key) || "[]"); return Array.isArray(value) ? value : []; }
+        catch { return []; }
+      }
+      function saveList(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+      }
+      function formatRichText(value) {
+        return escapeHtml(value)
+          .replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>")
+          .replace(/\*(.+?)\*/gs, "<em>$1</em>")
+          .replace(/__(.+?)__/gs, "<u>$1</u>")
+          .replace(/\n/g, "<br>");
+      }
+      function localDateValue() {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      }
+      function formatDate(value) {
+        if (!value) return "";
+        const date = new Date(value + (value.length === 10 ? "T12:00:00" : ""));
+        if (Number.isNaN(date.getTime())) return value;
+        return date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+      }
+      function splitTags(value) { return String(value || "").split(",").map(tag => tag.trim()).filter(Boolean); }
+      function selectedRadio(name) { return document.querySelector(`input[name="${name}"]:checked`)?.value || ""; }
+      function checkedValues(name) { return $$(`input[name="${name}"]:checked`).map(input => input.value); }
+      function setRadio(name, value) {
+        const item = $$(`input[name="${name}"]`).find(input => input.value === value);
+        if (item) item.checked = true;
+      }
+      function getAdminRecord() {
+        try { return JSON.parse(localStorage.getItem(ADMIN_KEY) || "null"); }
+        catch { return null; }
+      }
+      async function hashPassword(password) {
+        if (!window.crypto?.subtle) throw new Error("Secure password hashing is unavailable in this browser context. Open this file through a local development server or HTTPS.");
+        const bytes = new TextEncoder().encode(password);
+        const digest = await crypto.subtle.digest("SHA-256", bytes);
+        return Array.from(new Uint8Array(digest)).map(byte => byte.toString(16).padStart(2, "0")).join("");
+      }
+      function openLogin() {
+        $("#login-panel").hidden = false;
+        $("#admin-username").focus();
+        updateLoginMode();
+      }
+      function updateLoginMode() {
+        const hasAdmin = !!getAdminRecord();
+        $("#login-heading").textContent = hasAdmin ? "Log In" : "Set Up Admin Login";
+        $("#login-submit").textContent = hasAdmin ? "Log In" : "Set Password";
+        $("#admin-password").setAttribute("autocomplete", hasAdmin ? "current-password" : "new-password");
+        $("#login-message").textContent = hasAdmin
+          ? ""
+          : "No admin login exists yet. Choose a username and a password of at least 8 characters.";
+      }
+      function refreshAccountLinks() {
+        const holder = $("#account-links");
+        if (!isAdmin) {
+          holder.innerHTML = '<button type="button" id="open-login">Log In</button>';
+          $("#open-login").addEventListener("click", openLogin);
+          $("#home-login-button").hidden = false;
+          return;
+        }
+        const record = getAdminRecord();
+        holder.innerHTML = `<span>Admin: ${escapeHtml(record?.username || "Administrator")}</span><button type="button" id="new-post-button">New Post</button><button type="button" id="logout-button">Log Out</button>`;
+        $("#new-post-button").addEventListener("click", () => openEditor());
+        $("#logout-button").addEventListener("click", logout);
+        $("#home-login-button").hidden = true;
+      }
+      function logout() {
+        isAdmin = false;
+        sessionStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem(SESSION_KEY);
+        $("#editor-view").hidden = true;
+        $("#reader-view").hidden = true;
+        $("#home-layout").hidden = false;
+        refreshAccountLinks();
+        renderAll();
+      }
+      function renderTags() {
+        const counts = new Map();
+        const visiblePosts = readList(POSTS_KEY).filter(post => !post.registeredOnly || isAdmin);
+        visiblePosts.forEach(post => (post.tags || []).forEach(tag => {
+          const clean = String(tag).trim();
+          if (clean) counts.set(clean, (counts.get(clean) || 0) + 1);
+        }));
+        const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+        const list = $("#tag-list");
+        list.innerHTML = sorted.length
+          ? sorted.map(([tag, count]) => `<li><a class="inert-link" href="#">${escapeHtml(tag)}</a> <span class="tag-count">(${count})</span></li>`).join("")
+          : '<li class="empty-state">Tags will appear here when posts are published.</li>';
+        $("#site-stats").innerHTML = `${visiblePosts.length} posts&nbsp; | &nbsp;${sorted.length} tags`;
+      }
+      function symbolValues(post) {
+        const rating = ({"General":"G", "Teen":"T", "Mature":"M", "Explicit":"E", "Not Rated":"NR"})[post.rating] || "G";
+        const category = ({"F/F":"F", "F/M":"F/M", "M/M":"M", "Gen":"G", "Multi":"+", "Other":"O"})[post.category] || "G";
+        const selectedWarnings = post.warnings || [];
+        const hasSpecificWarning = selectedWarnings.some(warning => !["No Archive Warnings Apply", "Creator Chose Not To Use Warnings"].includes(warning));
+        const warnings = hasSpecificWarning ? "!" : selectedWarnings.includes("Creator Chose Not To Use Warnings") ? "?" : "✓";
+        const complete = post.complete === false ? "…" : "✓";
+        return { rating, category, warnings, complete };
+      }
+      function symbolButtonMarkup(post) {
+        const symbols = symbolValues(post);
+        const warnings = (post.warnings || []).length ? post.warnings.join(", ") : "No warning selected";
+        return `<button class="symbols" type="button" data-symbol-info="${escapeHtml(post.id)}" aria-expanded="false" aria-label="Show rating, category, warning, and completion explanations">
+          <span class="symbol symbol-rating" title="${escapeHtml(post.rating || "General")}">${symbols.rating}</span>
+          <span class="symbol symbol-category" title="${escapeHtml(post.category || "Gen")}">${symbols.category}</span>
+          <span class="symbol symbol-warning" title="${escapeHtml(warnings)}">${symbols.warnings}</span>
+          <span class="symbol symbol-status" title="${post.complete === false ? "In progress" : "Complete"}">${symbols.complete}</span>
+        </button>`;
+      }
+      function symbolLegendMarkup(post) {
+        const ratingDescriptions = {
+          "General": "General Audiences — intended for a broad audience.",
+          "Teen": "Teen And Up Audiences — may be more suitable for teen readers.",
+          "Mature": "Mature — intended for mature readers.",
+          "Explicit": "Explicit — contains explicitly rated material.",
+          "Not Rated": "Not Rated — no audience rating has been assigned."
+        };
+        const categoryDescriptions = {
+          "Gen": "General — no romantic or sexual relationship category is selected.",
+          "F/F": "F/F — a female/female relationship category.",
+          "F/M": "F/M — a female/male relationship category.",
+          "M/M": "M/M — a male/male relationship category.",
+          "Multi": "Multi — more than one relationship category.",
+          "Other": "Other — another category or configuration."
+        };
+        const warningDescriptions = (post.warnings || []).length
+          ? post.warnings.map(warning => {
+              if (warning === "No Archive Warnings Apply") return "No Archive Warnings Apply — the creator indicates that none of the listed archive warnings apply.";
+              if (warning === "Creator Chose Not To Use Warnings") return "Creator Chose Not To Use Warnings — the creator has chosen not to specify archive warnings.";
+              return `${warning} — this warning is marked for the post.`;
+            }).join(" ")
+          : "No archive warning has been selected.";
+        const rating = post.rating || "General";
+        const category = post.category || "Gen";
+        const completion = post.complete === false ? "In progress — this post is not marked complete." : "Complete — this post is marked complete.";
+        return `<div class="symbol-explanation" data-symbol-legend="${escapeHtml(post.id)}" hidden>
+          <p><strong>Rating (${escapeHtml(symbolValues(post).rating)}):</strong> ${escapeHtml(ratingDescriptions[rating] || rating)}</p>
+          <p><strong>Category (${escapeHtml(symbolValues(post).category)}):</strong> ${escapeHtml(categoryDescriptions[category] || category)}</p>
+          <p><strong>Archive Warnings (${escapeHtml(symbolValues(post).warnings)}):</strong> ${escapeHtml(warningDescriptions)}</p>
+          <p><strong>Completion (${escapeHtml(symbolValues(post).complete)}):</strong> ${escapeHtml(completion)}</p>
+        </div>`;
+      }
+      function cardMarkup(post, isDraft = false) {
+        const date = formatDate(post.date || post.createdAt || "");
+        const tags = (post.tags || []).map(tag => `<span>${escapeHtml(tag)}</span>`).join("");
+        const controls = isAdmin
+          ? `<div class="post-actions"><button type="button" data-edit="${escapeHtml(post.id)}" data-draft="${isDraft}">Edit</button>${isDraft ? "" : `<button type="button" data-delete="${escapeHtml(post.id)}">Delete</button>`}</div>`
+          : "";
+        return `<article class="post-card" data-post-card="${escapeHtml(post.id)}">
+          <div class="post-card-head">
+            ${symbolButtonMarkup(post)}
+            <div>
+              <h3 class="post-title"><button type="button" data-open-post="${escapeHtml(post.id)}">${escapeHtml(post.title || "Untitled draft")}</button></h3>
+              <div class="post-byline">by ${escapeHtml(post.author || "Oki")}</div>
+              ${post.topic ? `<p class="post-fandom">${escapeHtml(post.topic)}</p>` : ""}
+            </div>
+            <time class="post-date">${escapeHtml(date)}</time>
+          </div>
+          ${symbolLegendMarkup(post)}
+          ${tags ? `<div class="post-tags">${tags}</div>` : ""}
+          ${post.summary ? `<p class="post-summary">${escapeHtml(post.summary)}</p>` : ""}
+          ${controls}
+        </article>`;
+      }
+      function renderPosts() {
+        const posts = readList(POSTS_KEY)
+          .filter(post => !post.registeredOnly || isAdmin)
+          .sort((a, b) => String(b.date || b.createdAt).localeCompare(String(a.date || a.createdAt)));
+        $("#post-feed").innerHTML = posts.length ? posts.map(post => cardMarkup(post)).join("") : '<p class="empty-state">There are no posts yet.</p>';
+      }
+      function readerMetaItem(label, value) {
+        if (!value) return "";
+        return `<div class="reader-meta-item"><strong>${escapeHtml(label)}</strong><span>${escapeHtml(value)}</span></div>`;
+      }
+      function renderReader(post) {
+        currentReaderPostId = post.id;
+        const date = formatDate(post.date || post.createdAt || "");
+        const tags = (post.tags || []).length
+          ? `<div class="reader-tags">${post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join("")}</div>`
+          : "None";
+        const ratingNames = {
+          "General": "General Audiences",
+          "Teen": "Teen And Up Audiences",
+          "Mature": "Mature",
+          "Explicit": "Explicit",
+          "Not Rated": "Not Rated"
+        };
+        const meta = [
+          readerMetaItem("Rating", ratingNames[post.rating] || post.rating || "General Audiences"),
+          readerMetaItem("Archive Warnings", (post.warnings || []).join(", ") || "No warning selected"),
+          readerMetaItem("Category", post.category || "Gen"),
+          readerMetaItem("Topic", post.topic || ""),
+          `<div class="reader-meta-item"><strong>Additional Tags</strong>${tags}</div>`,
+          readerMetaItem("Language", post.language || "English"),
+          readerMetaItem("Collection / Challenge", post.collection || ""),
+          readerMetaItem("Series", post.series || ""),
+          readerMetaItem("Published", date),
+          readerMetaItem("Status", post.complete === false ? "In progress" : "Complete")
+        ].filter(Boolean).join("");
+        const beginningNotes = post.notes && post.notesPlacement !== "End"
+          ? `<section class="reader-notes"><strong>Notes:</strong> ${formatRichText(post.notes)}</section>`
+          : "";
+        const endingNotes = post.notes && post.notesPlacement === "End"
+          ? `<section class="reader-notes"><strong>Notes:</strong> ${formatRichText(post.notes)}</section>`
+          : "";
+        const summary = post.summary
+          ? `<section><h2 class="reader-section-heading">Summary:</h2><div class="reader-summary">${escapeHtml(post.summary).replace(/\n/g, "<br>")}</div></section>`
+          : "";
+        const creators = post.creators ? `, with ${escapeHtml(post.creators)}` : "";
+        $("#reader-work").innerHTML = `
+          <section class="reader-metadata" aria-label="Post information">
+            <div class="reader-meta-top">${symbolButtonMarkup(post)}</div>
+            ${symbolLegendMarkup(post)}
+            <div class="reader-meta-grid">${meta}</div>
+          </section>
+          <h1 class="reader-title">${escapeHtml(post.title || "Untitled post")}</h1>
+          <p class="reader-byline">by ${escapeHtml(post.author || "Oki")}${creators}</p>
+          ${summary}
+          ${beginningNotes}
+          <hr class="reader-divider">
+          <h2 class="reader-chapter-heading" id="reader-chapter-index">Chapter 1</h2>
+          <div class="reader-post-text">${formatRichText(post.content || "")}</div>
+          ${endingNotes}`;
+        const isBookmarked = readList(BOOKMARKS_KEY).includes(post.id);
+        $("#reader-bookmark").textContent = isBookmarked ? "Bookmarked" : "Bookmark";
+        const bottomBookmark = document.querySelector('.reader-bottom-actions [data-reader-action="bookmark"]');
+        if (bottomBookmark) bottomBookmark.textContent = isBookmarked ? "Bookmarked" : "Bookmark";
+        const kudosButton = document.querySelector('.reader-bottom-actions [data-reader-action="kudos"]');
+        if (kudosButton) kudosButton.textContent = readList(KUDOS_KEY).includes(post.id) ? "Kudos left" : "Kudos";
+        const laterButton = document.querySelector('[data-reader-action="later"]');
+        if (laterButton) laterButton.textContent = readList(READ_LATER_KEY).includes(post.id) ? "Marked for Later" : "Mark for Later";
+        $("#reader-action-status").textContent = "";
+        $("#home-layout").hidden = true;
+        $("#editor-view").hidden = true;
+        $("#reader-view").hidden = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function openReader(postId) {
+        const post = readList(POSTS_KEY).find(item => item.id === postId);
+        if (!post || (post.registeredOnly && !isAdmin)) return;
+        renderReader(post);
+      }
+      function closeReader() {
+        currentReaderPostId = "";
+        $("#reader-view").hidden = true;
+        $("#home-layout").hidden = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function toggleBookmark() {
+        if (!currentReaderPostId) return;
+        const bookmarks = readList(BOOKMARKS_KEY);
+        const exists = bookmarks.includes(currentReaderPostId);
+        saveList(BOOKMARKS_KEY, exists
+          ? bookmarks.filter(id => id !== currentReaderPostId)
+          : [...bookmarks, currentReaderPostId]);
+        $("#reader-bookmark").textContent = exists ? "Bookmark" : "Bookmarked";
+        const bottomBookmark = document.querySelector('.reader-bottom-actions [data-reader-action="bookmark"]');
+        if (bottomBookmark) bottomBookmark.textContent = exists ? "Bookmark" : "Bookmarked";
+        $("#reader-action-status").textContent = exists ? "Removed from bookmarks." : "This work is bookmarked in this browser.";
+      }
+      function toggleReadLater() {
+        if (!currentReaderPostId) return;
+        const items = readList(READ_LATER_KEY);
+        const exists = items.includes(currentReaderPostId);
+        saveList(READ_LATER_KEY, exists ? items.filter(id => id !== currentReaderPostId) : [...items, currentReaderPostId]);
+        const button = document.querySelector('[data-reader-action="later"]');
+        if (button) button.textContent = exists ? "Mark for Later" : "Marked for Later";
+        $("#reader-action-status").textContent = exists ? "Removed from your reading list." : "Added to your reading list in this browser.";
+      }
+      function giveKudos() {
+        if (!currentReaderPostId) return;
+        const kudos = readList(KUDOS_KEY);
+        if (kudos.includes(currentReaderPostId)) {
+          $("#reader-action-status").textContent = "You have already left kudos on this work.";
+          return;
+        }
+        saveList(KUDOS_KEY, [...kudos, currentReaderPostId]);
+        const button = document.querySelector('.reader-bottom-actions [data-reader-action="kudos"]');
+        if (button) button.textContent = "Kudos left";
+        $("#reader-action-status").textContent = "Kudos left. Thank you for supporting this work.";
+      }
+      async function shareCurrentWork() {
+        const post = readList(POSTS_KEY).find(item => item.id === currentReaderPostId);
+        if (!post) return;
+        const url = `${window.location.href.split("#")[0]}#${encodeURIComponent(post.id)}`;
+        try {
+          if (navigator.share) {
+            await navigator.share({ title: post.title || "Bo3 work", url });
+            $("#reader-action-status").textContent = "Share sheet opened.";
+          } else if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(url);
+            $("#reader-action-status").textContent = "Work link copied.";
+          } else {
+            $("#reader-action-status").textContent = `Share this link: ${url}`;
+          }
+        } catch (error) {
+          if (error?.name !== "AbortError") $("#reader-action-status").textContent = `Share this link: ${url}`;
+        }
+      }
+      function downloadCurrentWork() {
+        const post = readList(POSTS_KEY).find(item => item.id === currentReaderPostId);
+        if (!post) return;
+        const lines = [post.title || "Untitled work", `by ${post.author || "Oki"}`, ""];
+        if (post.summary) lines.push("Summary:", post.summary, "");
+        if (post.notes && post.notesPlacement !== "End") lines.push("Notes:", post.notes, "");
+        lines.push("Chapter 1", "", post.content || "");
+        if (post.notes && post.notesPlacement === "End") lines.push("", "Notes:", post.notes);
+        const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = objectUrl;
+        link.download = `${(post.title || "bo3-work").replace(/[^a-z0-9_-]+/gi, "-").replace(/^-|-$/g, "") || "bo3-work"}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(objectUrl);
+        $("#reader-action-status").textContent = "A text copy of this work has been downloaded.";
+      }
+      function handleReaderAction(action) {
+        if (action === "entire-work") window.scrollTo({ top: 0, behavior: "smooth" });
+        else if (action === "chapter-index") document.querySelector("#reader-chapter-index")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        else if (action === "bookmark") toggleBookmark();
+        else if (action === "later") toggleReadLater();
+        else if (action === "kudos") giveKudos();
+        else if (action === "share") shareCurrentWork();
+        else if (action === "download") downloadCurrentWork();
+        else if (action === "subscribe") $("#reader-action-status").textContent = "Subscriptions are not available in this standalone version.";
+      }
+      function renderDrafts() {
+        const drafts = readList(DRAFTS_KEY);
+        $("#draft-list").hidden = !isAdmin || drafts.length === 0;
+        $("#draft-feed").innerHTML = drafts.map(draft => `<div class="draft-row"><span>${escapeHtml(draft.title || "Untitled draft")}</span><span><button class="form-button" type="button" data-edit="${escapeHtml(draft.id)}" data-draft="true">Edit</button> <button class="form-button" type="button" data-delete-draft="${escapeHtml(draft.id)}">Delete</button></span></div>`).join("");
+      }
+      function renderAll() {
+        renderTags();
+        renderPosts();
+        renderDrafts();
+        refreshAccountLinks();
+      }
+      function resetForm() {
+        $("#post-form").reset();
+        $("#editing-id").value = "";
+        $("#post-date").value = localDateValue();
+        $("#editor-heading").textContent = "Post New Entry";
+        $("#publish-button").textContent = "Publish Post";
+        $("#preview-box").hidden = true;
+        $("#editor-status").textContent = "";
+        $("#editor-mode-note").textContent = "Plain text editor. Line breaks are preserved in the published post.";
+        setRadio("rating", "General");
+        setRadio("notes-placement", "Beginning");
+        setRadio("comment-permission", "Registered users and guests");
+      }
+      function openEditor(post = null, isDraft = false) {
+        if (!isAdmin) { openLogin(); return; }
+        resetForm();
+        if (post) {
+          $("#editing-id").value = post.id;
+          $("#editor-heading").textContent = isDraft ? "Edit Draft" : "Edit Post";
+          $("#publish-button").textContent = isDraft ? "Publish Post" : "Save Changes";
+          $("#post-topic").value = post.topic || "";
+          $("#post-category").value = post.category || "Gen";
+          $("#post-tags").value = (post.tags || []).join(", ");
+          $("#post-title-input").value = post.title || "";
+          $("#post-creators").value = post.creators || "";
+          $("#post-summary").value = post.summary || "";
+          $("#post-notes").value = post.notes || "";
+          $("#post-collection").value = post.collection || "";
+          $("#post-gift").value = post.gift || "";
+          $("#post-series").value = post.series || "";
+          $("#post-date").value = post.date || "";
+          $("#post-language").value = post.language || "English";
+          $("#registered-only").checked = !!post.registeredOnly;
+          $("#moderate-comments").checked = !!post.moderateComments;
+          $("#post-content").value = post.content || "";
+          $("#post-complete").checked = post.complete !== false;
+          setRadio("rating", post.rating || "General");
+          setRadio("notes-placement", post.notesPlacement || "Beginning");
+          setRadio("comment-permission", post.commentPermission || "Registered users and guests");
+          $$('input[name="warnings"]').forEach(input => input.checked = (post.warnings || []).includes(input.value));
+        }
+        $("#home-layout").hidden = true;
+        $("#reader-view").hidden = true;
+        $("#editor-view").hidden = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function collectPost() {
+        const id = $("#editing-id").value || `post-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+        const previous = [...readList(POSTS_KEY), ...readList(DRAFTS_KEY)].find(item => item.id === id);
+        return {
+          id,
+          title: $("#post-title-input").value.trim(),
+          topic: $("#post-topic").value.trim(),
+          category: $("#post-category").value,
+          rating: selectedRadio("rating"),
+          warnings: checkedValues("warnings"),
+          tags: splitTags($("#post-tags").value),
+          creators: $("#post-creators").value.trim(),
+          summary: $("#post-summary").value.trim(),
+          notes: $("#post-notes").value.trim(),
+          notesPlacement: selectedRadio("notes-placement"),
+          collection: $("#post-collection").value.trim(),
+          gift: $("#post-gift").value.trim(),
+          series: $("#post-series").value.trim(),
+          date: $("#post-date").value || localDateValue(),
+          language: $("#post-language").value,
+          registeredOnly: $("#registered-only").checked,
+          moderateComments: $("#moderate-comments").checked,
+          commentPermission: selectedRadio("comment-permission"),
+          complete: $("#post-complete").checked,
+          content: $("#post-content").value,
+          author: getAdminRecord()?.username || "Oki",
+          createdAt: previous?.createdAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+      }
+      function saveDraft() {
+        if (!isAdmin) return;
+        const post = collectPost();
+        const drafts = readList(DRAFTS_KEY).filter(item => item.id !== post.id);
+        drafts.unshift(post);
+        saveList(DRAFTS_KEY, drafts);
+        saveList(POSTS_KEY, readList(POSTS_KEY).filter(item => item.id !== post.id));
+        $("#editing-id").value = post.id;
+        $("#editor-status").textContent = "Draft saved in this browser.";
+        renderAll();
+      }
+      function publishPost(event) {
+        event.preventDefault();
+        if (!isAdmin) return;
+        const post = collectPost();
+        if (!post.title || !post.tags.length || !post.content.trim()) {
+          $("#editor-status").textContent = "Please add a title, at least one tag, and post text.";
+          return;
+        }
+        const posts = readList(POSTS_KEY).filter(item => item.id !== post.id);
+        posts.unshift(post);
+        saveList(POSTS_KEY, posts);
+        saveList(DRAFTS_KEY, readList(DRAFTS_KEY).filter(item => item.id !== post.id));
+        $("#editor-status").textContent = "Post published in this browser.";
+        $("#editor-view").hidden = true;
+        $("#reader-view").hidden = true;
+        $("#home-layout").hidden = false;
+        renderAll();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function previewPost() {
+        $("#preview-title").textContent = $("#post-title-input").value || "Untitled post";
+        $("#preview-summary").textContent = $("#post-summary").value;
+        $("#preview-content").textContent = $("#post-content").value;
+        $("#preview-box").hidden = false;
+      }
+      function insertAtCursor(textarea, wrapper) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selected = textarea.value.slice(start, end);
+        const replacement = wrapper === "\n\n" ? `\n\n${selected}\n\n` : `${wrapper}${selected || "text"}${wrapper}`;
+        textarea.setRangeText(replacement, start, end, "select");
+        textarea.focus();
+      }
+
+      // Header login controls.
+      $("#open-login").addEventListener("click", openLogin);
+      $("#home-login-button").addEventListener("click", openLogin);
+      $("#close-login").addEventListener("click", () => { $("#login-panel").hidden = true; });
+      $("#reader-back").addEventListener("click", closeReader);
+      $("#reader-back-bottom").addEventListener("click", closeReader);
+      $("#reader-bookmark").addEventListener("click", toggleBookmark);
+      $("#login-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const username = $("#admin-username").value.trim();
+        const password = $("#admin-password").value;
+        const message = $("#login-message");
+        if (!username || !password) { message.textContent = "Enter a username and password."; return; }
+        try {
+          const record = getAdminRecord();
+          const hash = await hashPassword(password);
+          if (!record) {
+            if (password.length < 8) {
+              message.textContent = "Choose a password with at least 8 characters.";
+              return;
+            }
+            localStorage.setItem(ADMIN_KEY, JSON.stringify({ username, passwordHash: hash }));
+          } else if (record.username !== username || record.passwordHash !== hash) {
+            message.textContent = "The username or password is incorrect.";
+            return;
+          }
+          isAdmin = true;
+          if ($("#remember-admin").checked) localStorage.setItem(SESSION_KEY, "1");
+          else { localStorage.removeItem(SESSION_KEY); sessionStorage.setItem(SESSION_KEY, "1"); }
+          $("#login-panel").hidden = true;
+          $("#login-form").reset();
+          message.textContent = "";
+          renderAll();
+        } catch (error) {
+          message.textContent = error.message || "Could not log in in this browser.";
+        }
+      });
+
+      // Navigation tabs toggle their dropdowns. Search is hidden while any dropdown is open.
+      $$(".nav-item > a").forEach(tab => {
+        tab.setAttribute("aria-expanded", "false");
+        tab.addEventListener("click", event => {
+          event.preventDefault();
+          const item = tab.parentElement;
+          const wasOpen = item.classList.contains("dropdown-open");
+          $$(".nav-item").forEach(navItem => {
+            navItem.classList.remove("dropdown-open");
+            navItem.querySelector(":scope > a")?.setAttribute("aria-expanded", "false");
+          });
+          if (!wasOpen) {
+            item.classList.add("dropdown-open");
+            tab.setAttribute("aria-expanded", "true");
+          }
+          $(".nav-bar").classList.toggle("menu-open", !wasOpen);
+        });
+      });
+      $$("a.inert-link").forEach(link => link.addEventListener("click", event => event.preventDefault()));
+      $("#search-form").addEventListener("submit", event => event.preventDefault());
+
+      // Post editor actions.
+      $("#post-form").addEventListener("submit", publishPost);
+      $("#save-draft").addEventListener("click", saveDraft);
+      $("#preview-post").addEventListener("click", previewPost);
+      $("#back-home").addEventListener("click", () => { $("#editor-view").hidden = true; $("#home-layout").hidden = false; renderAll(); });
+      $("#cancel-edit").addEventListener("click", () => { $("#editor-view").hidden = true; $("#home-layout").hidden = false; renderAll(); });
+      $("#rich-mode").addEventListener("click", () => {
+        editorMode = "rich"; $("#rich-mode").setAttribute("aria-pressed", "true"); $("#html-mode").setAttribute("aria-pressed", "false");
+        $("#editor-mode-note").textContent = "Rich Text mode: use the formatting buttons below to add simple bold, italic, and paragraph markers.";
+      });
+      $("#html-mode").addEventListener("click", () => {
+        editorMode = "html"; $("#rich-mode").setAttribute("aria-pressed", "false"); $("#html-mode").setAttribute("aria-pressed", "true");
+        $("#editor-mode-note").textContent = "HTML mode is a plain source-text field in this standalone demo; markup is displayed as text in preview and is not executed.";
+      });
+      $$("[data-wrap]").forEach(button => button.addEventListener("click", () => insertAtCursor($("#post-content"), button.dataset.wrap)));
+
+      // Delegated post actions keep newly rendered cards interactive.
+      document.addEventListener("click", event => {
+        const inertLink = event.target.closest("a.inert-link");
+        if (inertLink) event.preventDefault();
+        const readerAction = event.target.closest("[data-reader-action]");
+        if (readerAction) handleReaderAction(readerAction.dataset.readerAction);
+        const symbolInfo = event.target.closest("[data-symbol-info]");
+        if (symbolInfo) {
+          const id = symbolInfo.dataset.symbolInfo;
+          const owner = symbolInfo.closest(".post-card, .reader-metadata");
+          const legend = owner?.querySelector(".symbol-explanation");
+          if (legend) {
+            legend.hidden = !legend.hidden;
+            symbolInfo.setAttribute("aria-expanded", String(!legend.hidden));
+          }
+        }
+        const openPost = event.target.closest("[data-open-post]");
+        if (openPost) openReader(openPost.dataset.openPost);
+        const edit = event.target.closest("[data-edit]");
+        if (edit && isAdmin) {
+          const key = edit.dataset.draft === "true" ? DRAFTS_KEY : POSTS_KEY;
+          const post = readList(key).find(item => item.id === edit.dataset.edit);
+          if (post) openEditor(post, key === DRAFTS_KEY);
+        }
+        const remove = event.target.closest("[data-delete]");
+        if (remove && isAdmin) {
+          saveList(POSTS_KEY, readList(POSTS_KEY).filter(item => item.id !== remove.dataset.delete));
+          renderAll();
+        }
+        const removeDraft = event.target.closest("[data-delete-draft]");
+        if (removeDraft && isAdmin) {
+          saveList(DRAFTS_KEY, readList(DRAFTS_KEY).filter(item => item.id !== removeDraft.dataset.deleteDraft));
+          renderAll();
+        }
+      });
+
+      // Restore a remembered local admin session, then draw the homepage.
+      if (localStorage.getItem(SESSION_KEY) === "1") isAdmin = true;
+      updateLoginMode();
+      refreshAccountLinks();
+      renderAll();
+      const deepLinkedPostId = decodeURIComponent(window.location.hash.slice(1));
+      if (deepLinkedPostId) openReader(deepLinkedPostId);
+    })();
+  </script>
+</body>
+</html>
