@@ -412,7 +412,18 @@
     }
     body[data-site-skin="reversi"] :is(h1, h2, h3, p, label, .reader-title, .reader-section-heading, .archive-page-head h1, .archive-results > h2) { color: #f4f4f4; }
     body[data-site-skin="reversi"] :is(.stats, .project-line, .archive-page-head p, .archive-count, .admin-note, .field-hint, .reader-byline, .reader-post-text, .post-date, .tag-count) { color: #d0d0d0; }
-    body[data-site-skin="reversi"] .reader-tags span { color: #fff; background: #444; border-color: #aaa; }
+    body[data-site-skin="reversi"] .reader-tags span { color: #222; background: #e2e2e2; border-color: #aaa; }
+    /* Keep tag chips dark-text-on-light so they remain legible in Reversi. */
+    body[data-site-skin="reversi"] .post-tags span { color: #222; background: #e2e2e2; border-color: #aaa; }
+    /* The author byline and account controls sit directly on the dark page/header. */
+    body[data-site-skin="reversi"] .post-byline,
+    body[data-site-skin="reversi"] .reader-byline { color: #d0d0d0; }
+    body[data-site-skin="reversi"] .account-links,
+    body[data-site-skin="reversi"] .account-links > span,
+    body[data-site-skin="reversi"] .account-links a,
+    body[data-site-skin="reversi"] .account-links button { color: #e0e0e0 !important; }
+    body[data-site-skin="reversi"] .account-links a:hover,
+    body[data-site-skin="reversi"] .account-links button:hover { color: #fff !important; }
     body[data-site-skin="reversi"] :is(.nav-bar, .footer) { background: #050505; border-color: #555; }
     body[data-site-skin="reversi"] .footer :is(button, .skin-choice[aria-pressed="true"]) { color: #111; background: #fff; }
 
