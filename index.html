@@ -65,16 +65,15 @@
     }
     .nav-bar::before {
       position: absolute; inset: 0; z-index: 0; content: ""; pointer-events: none;
-      /* SVG turbulence produces a seamless Perlin-style grain texture. */
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='perlin'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23perlin)' opacity='.75'/%3E%3C/svg%3E");
-      background-repeat: repeat; background-size: 180px 180px; opacity: 0.20; mix-blend-mode: soft-light;
+      /* Large-scale, monochrome Perlin clouds span the entire navigation header. */
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 420 420' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='perlin'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.018' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23perlin)' opacity='.7'/%3E%3C/svg%3E");
+      background-repeat: repeat; background-size: 420px 420px; opacity: 0.14; mix-blend-mode: soft-light;
     }
     .nav-bar::after {
-      /* Small textured gradient along the bottom edge of the red header. */
-      position: absolute; inset-inline: 0; bottom: 0; height: 20%; z-index: 0; content: ""; pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='perlin'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23perlin)' opacity='.75'/%3E%3C/svg%3E"), linear-gradient(to bottom, rgba(67, 0, 0, 0) 0%, rgba(67, 0, 0, 0.55) 45%, #430000 100%);
-      background-size: 110px 110px, 100% 100%; background-repeat: repeat, no-repeat;
-      background-blend-mode: soft-light, normal; opacity: 0.9;
+      /* Theme-specific deep gradient stays separate from the full-header texture. */
+      position: absolute; inset-inline: 0; bottom: 0; height: 24%; z-index: 0; content: ""; pointer-events: none;
+      background-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.16) 45%, rgba(0, 0, 0, 0.34) 100%);
+      background-repeat: no-repeat; opacity: 0.9;
     }
     .nav-list { position: relative; z-index: 1; display: flex; flex-flow: row nowrap; align-items: stretch; gap: 0; margin: 0; padding: 0; list-style: none; white-space: nowrap; }
     .nav-item { position: static; flex: 0 0 auto; }
@@ -452,7 +451,7 @@
     body[data-site-skin="snow-blue"] { --nav-surface: #367ba9; --nav-shadow: #153a58; --nav-label: #fff; --nav-active: #dceaf4; --nav-active-label: #173b55; }
     body[data-site-skin] .nav-bar { background: var(--nav-surface) !important; color: var(--nav-label); }
     body[data-site-skin] .nav-bar::after {
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='perlin'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23perlin)' opacity='.75'/%3E%3C/svg%3E"), linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--nav-shadow) 65%, transparent) 45%, var(--nav-shadow) 100%);
+      background-image: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--nav-shadow) 34%, transparent) 42%, color-mix(in srgb, var(--nav-shadow) 82%, transparent) 100%);
     }
     body[data-site-skin] .nav-item > a { color: var(--nav-label) !important; }
     body[data-site-skin] .nav-item > a:hover,
