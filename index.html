@@ -503,17 +503,16 @@
         <button class="close-panel" id="close-login" type="button" aria-label="Close login">×</button>
       </div>
       <form id="login-form">
-        <label for="admin-username">Username or email:</label>
+        <label for="admin-username">Supabase admin email:</label>
         <input id="admin-username" name="username" type="text" autocomplete="username" required>
         <label for="admin-password">Password:</label>
         <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
         <div class="login-options">
-          <label><input id="remember-admin" type="checkbox"> Remember Me</label>
           <button class="form-button" type="submit" id="login-submit">Log In</button>
         </div>
         <p class="login-message" id="login-message" role="status"></p>
       </form>
-      <p class="admin-note">First use: choose a username and password to set up the administrator account in this browser. This local demo is not secure authentication for a public website.</p>
+      <p class="admin-note">Use the email and password for the admin account configured in Supabase.</p>
     </section>
 
     <nav class="nav-bar" aria-label="Main navigation">
@@ -750,9 +749,13 @@
     </footer>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     (() => {
       "use strict";
+      const SUPABASE_URL = "https://mcbbiufracthrbxyhthb.supabase.co";
+      const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_BtlEUbaFlYGvjI2Zdagq7g_cmH6Z7x2";
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
       const POSTS_KEY = "bo3_posts_v1";
       const DRAFTS_KEY = "bo3_drafts_v1";
       const ADMIN_KEY = "bo3_admin_v1";
@@ -763,7 +766,9 @@
       const SITE_SKINS = { "default": "Default", "low-vision": "Low Vision", "reversi": "Reversi", "snow-blue": "Snow Blue" };
       const $ = (selector) => document.querySelector(selector);
       const $$ = (selector) => Array.from(document.querySelectorAll(selector));
-      let isAdmin = sessionStorage.getItem(SESSION_KEY) === "1";
+      let isAdmin = false;
+      let adminUsername = "";
+      let cloudReady = false;
       let editorMode = "rich";
       let currentReaderPostId = "";
       let currentPageState = { view: "home" };
@@ -835,29 +840,18 @@
         const item = $$(`input[name="${name}"]`).find(input => input.value === value);
         if (item) item.checked = true;
       }
-      function getAdminRecord() {
-        try { return JSON.parse(localStorage.getItem(ADMIN_KEY) || "null"); }
-        catch { return null; }
-      }
-      async function hashPassword(password) {
-        if (!window.crypto?.subtle) throw new Error("Secure password hashing is unavailable in this browser context. Open this file through a local development server or HTTPS.");
-        const bytes = new TextEncoder().encode(password);
-        const digest = await crypto.subtle.digest("SHA-256", bytes);
-        return Array.from(new Uint8Array(digest)).map(byte => byte.toString(16).padStart(2, "0")).join("");
-      }
+      function getAdminRecord() { return isAdmin ? { username: adminUsername || "Administrator" } : null; }
       function openLogin() {
         $("#login-panel").hidden = false;
         $("#admin-username").focus();
         updateLoginMode();
       }
       function updateLoginMode() {
-        const hasAdmin = !!getAdminRecord();
-        $("#login-heading").textContent = hasAdmin ? "Log In" : "Set Up Admin Login";
-        $("#login-submit").textContent = hasAdmin ? "Log In" : "Set Password";
-        $("#admin-password").setAttribute("autocomplete", hasAdmin ? "current-password" : "new-password");
-        $("#login-message").textContent = hasAdmin
-          ? ""
-          : "No admin login exists yet. Choose a username and a password of at least 8 characters.";
+        $("#login-heading").textContent = "Admin Log In";
+        $("#login-submit").textContent = "Log In";
+        $("#admin-username").setAttribute("autocomplete", "username");
+        $("#admin-password").setAttribute("autocomplete", "current-password");
+        $("#login-message").textContent = "Sign in with the email and password for your Supabase admin account.";
       }
       function refreshAccountLinks() {
         const holder = $("#account-links");
@@ -871,15 +865,38 @@
         $("#new-post-button").addEventListener("click", () => openEditor());
         $("#logout-button").addEventListener("click", logout);
       }
-      function logout() {
+      async function logout() {
+        await supabase.auth.signOut();
         isAdmin = false;
-        sessionStorage.removeItem(SESSION_KEY);
-        localStorage.removeItem(SESSION_KEY);
+        adminUsername = "";
         $("#editor-view").hidden = true;
         $("#reader-view").hidden = true;
+        await loadPostsFromCloud();
         showHome();
         refreshAccountLinks();
         renderAll();
+      }
+      async function loadPostsFromCloud() {
+        const { data, error } = await supabase.from("blog_posts").select("id,data,status,updated_at").order("updated_at", { ascending: false });
+        if (error) throw error;
+        const published = (data || []).filter(row => row.status === "published").map(row => ({ ...row.data, id: row.id }));
+        const drafts = (data || []).filter(row => row.status === "draft").map(row => ({ ...row.data, id: row.id }));
+        saveList(POSTS_KEY, published);
+        saveList(DRAFTS_KEY, drafts);
+        cloudReady = true;
+      }
+      async function savePostToCloud(post, status) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const userId = sessionData?.session?.user?.id;
+        if (!userId || !isAdmin) throw new Error("Your admin session has expired. Please log in again.");
+        const { error } = await supabase.from("blog_posts").upsert({
+          id: post.id, data: post, status, created_by: userId, updated_at: new Date().toISOString()
+        }, { onConflict: "id" });
+        if (error) throw error;
+      }
+      async function deletePostFromCloud(id) {
+        const { error } = await supabase.from("blog_posts").delete().eq("id", id);
+        if (error) throw error;
       }
       function renderTags() {
         const counts = new Map();
@@ -1355,18 +1372,23 @@
           updatedAt: new Date().toISOString()
         };
       }
-      function saveDraft() {
+      async function saveDraft() {
         if (!isAdmin) return;
         const post = collectPost();
-        const drafts = readList(DRAFTS_KEY).filter(item => item.id !== post.id);
-        drafts.unshift(post);
-        saveList(DRAFTS_KEY, drafts);
-        saveList(POSTS_KEY, readList(POSTS_KEY).filter(item => item.id !== post.id));
-        $("#editing-id").value = post.id;
-        $("#editor-status").textContent = "Draft saved in this browser.";
-        renderAll();
+        const status = $("#editor-status");
+        status.textContent = "Saving draft to Supabase…";
+        try {
+          await savePostToCloud(post, "draft");
+          const drafts = readList(DRAFTS_KEY).filter(item => item.id !== post.id);
+          drafts.unshift(post);
+          saveList(DRAFTS_KEY, drafts);
+          saveList(POSTS_KEY, readList(POSTS_KEY).filter(item => item.id !== post.id));
+          $("#editing-id").value = post.id;
+          status.textContent = "Draft saved to Supabase.";
+          renderAll();
+        } catch (error) { status.textContent = `Could not save draft: ${error.message}`; }
       }
-      function publishPost(event) {
+      async function publishPost(event) {
         event.preventDefault();
         if (!isAdmin) return;
         const post = collectPost();
@@ -1374,16 +1396,23 @@
           $("#editor-status").textContent = "Please add a title, at least one tag, and post text.";
           return;
         }
-        const posts = readList(POSTS_KEY).filter(item => item.id !== post.id);
-        posts.unshift(post);
-        saveList(POSTS_KEY, posts);
-        saveList(DRAFTS_KEY, readList(DRAFTS_KEY).filter(item => item.id !== post.id));
-        $("#editor-status").textContent = "Post published in this browser.";
-        $("#editor-view").hidden = true;
-        $("#reader-view").hidden = true;
-        showHome();
-        renderAll();
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        $("#publish-button").disabled = true;
+        $("#editor-status").textContent = "Publishing to Supabase…";
+        try {
+          await savePostToCloud(post, "published");
+          const posts = readList(POSTS_KEY).filter(item => item.id !== post.id);
+          posts.unshift(post);
+          saveList(POSTS_KEY, posts);
+          saveList(DRAFTS_KEY, readList(DRAFTS_KEY).filter(item => item.id !== post.id));
+          $("#editor-status").textContent = "Post published to Supabase.";
+          $("#editor-view").hidden = true;
+          $("#reader-view").hidden = true;
+          showHome();
+          renderAll();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch (error) {
+          $("#editor-status").textContent = `Could not publish: ${error.message}`;
+        } finally { $("#publish-button").disabled = false; }
       }
       function previewPost() {
         $("#preview-title").textContent = $("#post-title-input").value || "Untitled post";
@@ -1408,33 +1437,32 @@
       $("#reader-bookmark").addEventListener("click", toggleBookmark);
       $("#login-form").addEventListener("submit", async (event) => {
         event.preventDefault();
-        const username = $("#admin-username").value.trim();
+        const email = $("#admin-username").value.trim();
         const password = $("#admin-password").value;
         const message = $("#login-message");
-        if (!username || !password) { message.textContent = "Enter a username and password."; return; }
+        if (!email || !password) { message.textContent = "Enter your Supabase admin email and password."; return; }
+        const submit = $("#login-submit");
+        submit.disabled = true;
+        message.textContent = "Signing in…";
         try {
-          const record = getAdminRecord();
-          const hash = await hashPassword(password);
-          if (!record) {
-            if (password.length < 8) {
-              message.textContent = "Choose a password with at least 8 characters.";
-              return;
-            }
-            localStorage.setItem(ADMIN_KEY, JSON.stringify({ username, passwordHash: hash }));
-          } else if (record.username !== username || record.passwordHash !== hash) {
-            message.textContent = "The username or password is incorrect.";
-            return;
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          const { data: profile, error: profileError } = await supabase.from("admin_profiles").select("username,role").eq("user_id", data.user.id).maybeSingle();
+          if (profileError) throw profileError;
+          if (!profile || profile.role !== "admin") {
+            await supabase.auth.signOut();
+            throw new Error("This Supabase account is not configured as a Bo3 admin. Add its user ID to public.admin_profiles.");
           }
           isAdmin = true;
-          if ($("#remember-admin").checked) localStorage.setItem(SESSION_KEY, "1");
-          else { localStorage.removeItem(SESSION_KEY); sessionStorage.setItem(SESSION_KEY, "1"); }
+          adminUsername = profile.username;
           $("#login-panel").hidden = true;
           $("#login-form").reset();
+          await loadPostsFromCloud();
           message.textContent = "";
           renderAll();
         } catch (error) {
-          message.textContent = error.message || "Could not log in in this browser.";
-        }
+          message.textContent = error.message || "Could not log in to Supabase.";
+        } finally { submit.disabled = false; }
       });
 
       // AO3-style navigation: the top-level tabs open menus; menu entries open working archive views.
@@ -1547,13 +1575,13 @@
         }
         const remove = event.target.closest("[data-delete]");
         if (remove && isAdmin) {
-          saveList(POSTS_KEY, readList(POSTS_KEY).filter(item => item.id !== remove.dataset.delete));
-          renderAll();
+          deletePostFromCloud(remove.dataset.delete).then(async () => { await loadPostsFromCloud(); renderAll(); })
+            .catch(error => alert(`Could not delete post: ${error.message}`));
         }
         const removeDraft = event.target.closest("[data-delete-draft]");
         if (removeDraft && isAdmin) {
-          saveList(DRAFTS_KEY, readList(DRAFTS_KEY).filter(item => item.id !== removeDraft.dataset.deleteDraft));
-          renderAll();
+          deletePostFromCloud(removeDraft.dataset.deleteDraft).then(async () => { await loadPostsFromCloud(); renderAll(); })
+            .catch(error => alert(`Could not delete draft: ${error.message}`));
         }
       });
 
@@ -1562,12 +1590,26 @@
       try { savedSkin = localStorage.getItem(SITE_SKIN_KEY) || "default"; } catch (_) { /* Use the default skin. */ }
       applySiteSkin(savedSkin, false);
 
-      // Restore a remembered local admin session, then draw the homepage.
-      if (localStorage.getItem(SESSION_KEY) === "1") isAdmin = true;
-      updateLoginMode();
-      refreshAccountLinks();
-      showHome();
-      renderAll();
+      // Restore the Supabase Auth session, verify the admin profile, then load cloud posts.
+      (async () => {
+        updateLoginMode();
+        showHome();
+        try {
+          const { data: sessionData } = await supabase.auth.getSession();
+          const user = sessionData?.session?.user;
+          if (user) {
+            const { data: profile } = await supabase.from("admin_profiles").select("username,role").eq("user_id", user.id).maybeSingle();
+            if (profile?.role === "admin") { isAdmin = true; adminUsername = profile.username; }
+            else await supabase.auth.signOut();
+          }
+          await loadPostsFromCloud();
+        } catch (error) {
+          console.error("Bo3 Supabase connection:", error);
+          $("#login-message").textContent = `Supabase could not be reached: ${error.message}`;
+        }
+        refreshAccountLinks();
+        renderAll();
+      })();
       const deepLinkedPostId = decodeURIComponent(window.location.hash.slice(1));
       if (deepLinkedPostId) openReader(deepLinkedPostId);
     })();
